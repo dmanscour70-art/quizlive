@@ -216,9 +216,27 @@ socket.on('question:results', ({ correctIndex, questionText, choices, leaderboar
 socket.on('game:end', ({ leaderboard }) => {
   hideAll();
   show('finalScreen');
-
   renderFinalLeaderboard(leaderboard);
+  saveMultiToHistory(leaderboard);
 });
+
+function saveMultiToHistory(leaderboard) {
+  const title = document.getElementById('finalQuizTitle').textContent;
+  const STORAGE_KEY = 'mindeon_history';
+  const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  existing.push({
+    id:         Date.now().toString(36),
+    mode:       'multi',
+    quizTitle:  title,
+    date:       Date.now(),
+    score:      leaderboard[0]?.score || 0,
+    correct:    null,
+    total:      null,
+    leaderboard: leaderboard
+  });
+  if (existing.length > 50) existing.splice(0, existing.length - 50);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+}
 
 socket.on('host:disconnected', () => {
   // This shouldn't happen for host, but handle gracefully

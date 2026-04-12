@@ -199,7 +199,8 @@
 
       <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem;">
         <button class="btn btn-primary" id="replayBtn">🔁 Rejouer</button>
-        <a href="/" class="btn btn-secondary">🏠 Accueil</a>
+        <a href="/history.html" class="btn btn-secondary">📋 Historique</a>
+        <a href="/" class="btn btn-ghost">🏠 Accueil</a>
       </div>
 
       <div class="history-list" id="historyList"></div>
@@ -367,8 +368,36 @@
       }
     });
 
+    /* ── Save to history ─────────────────────────────────────────────────── */
+    function saveToHistory() {
+      const STORAGE_KEY = 'mindeon_history';
+      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const correct  = history.filter(h => h.isCorrect).length;
+      existing.push({
+        id:        Date.now().toString(36),
+        mode:      'solo',
+        quizId:    quizId,
+        quizTitle: quiz.title,
+        date:      Date.now(),
+        score:     score,
+        correct:   correct,
+        total:     history.length,
+        questions: history.map(h => ({
+          text:       h.text,
+          correct:    h.correct,
+          yourAnswer: h.yourAnswer,
+          isCorrect:  h.isCorrect,
+          pts:        h.pts
+        }))
+      });
+      // Keep last 50 games
+      if (existing.length > 50) existing.splice(0, existing.length - 50);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+    }
+
     /* ── Final ───────────────────────────────────────────────────────────── */
     function showFinal() {
+      saveToHistory();
       hide('quizScreen');
       show('finalScreen');
 

@@ -13,6 +13,7 @@ let lastAnswerCorrect = null;
 let lastPoints = 0;
 let lastMyAnswerIndex = null;
 let timerInterval = null;
+let timeoutTimer = null;   // ← timeout "temps écoulé", doit être annulable
 let answered = false;
 let currentTimeLimit = 20;
 
@@ -129,6 +130,7 @@ function connectAndJoin() {
     answered = false;
     currentTimeLimit = timeLimit;
     clearInterval(timerInterval);
+    clearTimeout(timeoutTimer);   // ← annule le timeout de la question précédente
 
     // Build question screen
     document.getElementById('pQText').textContent = text;
@@ -153,6 +155,7 @@ function connectAndJoin() {
           b.style.transform = i === ci ? 'scale(1.05)' : 'scale(0.95)';
         });
 
+        clearTimeout(timeoutTimer);  // ← player a répondu, plus besoin du timeout
         lastMyAnswerIndex = ci;
         socket.emit('player:answer', { pin, answerIndex: ci });
 
@@ -170,7 +173,7 @@ function connectAndJoin() {
     startTimer(timeLimit);
 
     // Auto-show timeout message if time runs out without answering
-    setTimeout(() => {
+    timeoutTimer = setTimeout(() => {
       if (!answered) {
         answered = true;
         grid.querySelectorAll('.player-ans-btn').forEach(b => b.disabled = true);
