@@ -284,27 +284,34 @@ function connectAndJoin() {
 
     if (type === 'open') {
       const { correctAnswer } = data;
-      // Bonne réponse
+
+      // Single-column grid for open mode
+      ansGrid.style.gridTemplateColumns = '1fr';
+
+      // Bonne réponse — custom green card
       const correctCard = document.createElement('div');
-      correctCard.className = 'result-ans-btn correct';
-      correctCard.style.cssText = 'flex-direction:column; align-items:flex-start; gap:0.2rem;';
+      correctCard.style.cssText = 'background:rgba(56,161,105,0.12); border:2px solid #38a169; border-radius:var(--radius); padding:0.85rem 1rem;';
       correctCard.innerHTML = `
-        <span style="font-size:0.72rem; opacity:0.7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Bonne réponse</span>
-        <span style="font-size:1.05rem; font-weight:700;">${escHtml(correctAnswer || '')}</span>
+        <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#38a169; margin-bottom:0.3rem;">✓ Bonne réponse</div>
+        <div style="font-size:1.05rem; font-weight:700; color:var(--text);">${escHtml(correctAnswer || '')}</div>
       `;
       ansGrid.appendChild(correctCard);
+
       // Player's own answer
       if (lastMyAnswerText) {
+        const ok = lastAnswerCorrect === true;
+        const ko = lastAnswerCorrect === false;
         const myCard = document.createElement('div');
-        myCard.className = `result-ans-btn ${lastAnswerCorrect === false ? 'incorrect' : lastAnswerCorrect === true ? 'correct' : ''}`;
-        myCard.style.cssText = 'flex-direction:column; align-items:flex-start; gap:0.2rem; opacity:0.85;';
+        myCard.style.cssText = `background:${ok ? 'rgba(56,161,105,0.08)' : ko ? 'rgba(229,62,62,0.08)' : 'var(--card)'}; border:2px solid ${ok ? '#38a169' : ko ? 'var(--danger)' : 'var(--border)'}; border-radius:var(--radius); padding:0.85rem 1rem;`;
         myCard.innerHTML = `
-          <span style="font-size:0.72rem; opacity:0.7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Votre réponse</span>
-          <span style="font-size:1.05rem;">${escHtml(lastMyAnswerText)}</span>
+          <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:${ok ? '#38a169' : 'var(--text-muted)'}; margin-bottom:0.3rem;">${ok ? '✓' : '✗'} Votre réponse</div>
+          <div style="font-size:1.05rem; color:var(--text);">${escHtml(lastMyAnswerText)}</div>
         `;
         ansGrid.appendChild(myCard);
       }
     } else {
+      // Reset grid for QCM
+      ansGrid.style.gridTemplateColumns = '';
       // QCM recap
       const { correctIndex, choices } = data;
       (choices || []).forEach((ch, ci) => {

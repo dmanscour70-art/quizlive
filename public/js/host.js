@@ -180,36 +180,45 @@ socket.on('question:results', (data) => {
   if (type === 'open') {
     const { correctAnswer, playerAnswers } = data;
 
-    // Correct answer banner
+    // Single-column grid for open mode
+    ansGrid.style.gridTemplateColumns = '1fr';
+
+    // Correct answer card — custom green style (no result-ans-btn, no data-index needed)
     const correctDiv = document.createElement('div');
-    correctDiv.className = 'result-ans-btn correct';
-    correctDiv.style.cssText = 'flex-direction:column; align-items:flex-start; gap:0.2rem; margin-bottom:0.75rem;';
+    correctDiv.style.cssText = 'background:rgba(56,161,105,0.12); border:2px solid #38a169; border-radius:var(--radius); padding:0.9rem 1.1rem;';
     correctDiv.innerHTML = `
-      <span style="font-size:0.72rem; opacity:0.7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Bonne réponse</span>
-      <span style="font-size:1.1rem; font-weight:800;">${escHtml(correctAnswer || '')}</span>
+      <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#38a169; margin-bottom:0.3rem;">✓ Bonne réponse</div>
+      <div style="font-size:1.15rem; font-weight:800; color:var(--text);">${escHtml(correctAnswer || '')}</div>
     `;
     ansGrid.appendChild(correctDiv);
 
-    // Replace chart area with player answer list
+    // Override dist-chart CSS → vertical list
+    chart.style.cssText = 'display:flex; flex-direction:column; gap:0.35rem; height:auto; max-height:300px; overflow-y:auto;';
     if (distTitle) distTitle.textContent = 'Réponses des joueurs';
+
     const correctCount = playerAnswers.filter(p => p.isCorrect).length;
     playerAnswers.forEach(({ name, text, isCorrect, answered }) => {
       const item = document.createElement('div');
-      item.style.cssText = `display:flex; align-items:center; gap:0.6rem; padding:0.4rem 0.65rem; border-radius:var(--radius); background:${isCorrect ? 'rgba(56,161,105,0.12)' : 'var(--card)'}; border-left:3px solid ${isCorrect ? 'var(--success)' : answered ? 'var(--danger)' : 'var(--border)'}; margin-bottom:0.3rem; font-size:0.87rem;`;
+      item.style.cssText = `display:flex; align-items:center; gap:0.65rem; padding:0.5rem 0.75rem; border-radius:var(--radius); background:${isCorrect ? 'rgba(56,161,105,0.1)' : 'var(--card)'}; border-left:3px solid ${isCorrect ? '#38a169' : answered ? 'var(--danger)' : 'var(--border)'};`;
       item.innerHTML = `
-        <span style="font-weight:700; color:var(--text-muted); min-width:75px; flex-shrink:0; font-size:0.82rem;">${escHtml(name)}</span>
-        <span style="flex:1;">${answered ? escHtml(text) : '<em style="opacity:0.45;">Sans réponse</em>'}</span>
-        <span>${isCorrect ? '✅' : answered ? '❌' : '—'}</span>
+        <span style="font-weight:700; color:var(--text-muted); min-width:80px; flex-shrink:0; font-size:0.82rem;">${escHtml(name)}</span>
+        <span style="flex:1; font-size:0.9rem; color:var(--text);">${answered ? escHtml(text) : '<em style="opacity:0.4;">Sans réponse</em>'}</span>
+        <span style="font-size:1rem; flex-shrink:0;">${isCorrect ? '✅' : answered ? '❌' : '—'}</span>
       `;
       chart.appendChild(item);
     });
+
     const summary = document.createElement('div');
-    summary.style.cssText = 'margin-top:0.6rem; font-size:0.8rem; color:var(--text-muted); font-weight:600;';
+    summary.style.cssText = 'margin-top:0.4rem; font-size:0.8rem; color:var(--text-muted); font-weight:600; padding-top:0.4rem; border-top:1px solid var(--border);';
     summary.textContent = `${correctCount} / ${playerAnswers.length} bonne${correctCount > 1 ? 's' : ''} réponse${correctCount > 1 ? 's' : ''}`;
     chart.appendChild(summary);
 
   } else {
     const { correctIndex, choices, distribution } = data;
+
+    // Reset to default grid for QCM
+    ansGrid.style.gridTemplateColumns = '';
+    chart.style.cssText = '';
 
     // Answer buttons
     (choices || currentQuestion?.choices || []).forEach((ch, ci) => {
