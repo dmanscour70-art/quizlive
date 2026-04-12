@@ -209,13 +209,6 @@ io.on('connection', (socket) => {
         points = Math.round(500 + 500 * ratio);
       }
       player.answers[game.currentQuestion] = { answerText: String(answerText || '').trim(), isCorrect, points, elapsed };
-      if (game.hostSocketId) {
-        io.to(game.hostSocketId).emit('host:open:answer', {
-          name: player.name,
-          text: String(answerText || '').trim(),
-          isCorrect
-        });
-      }
     } else {
       isCorrect = answerIndex === q.correctIndex;
       if (isCorrect) {

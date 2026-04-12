@@ -140,15 +140,20 @@ function connectAndJoin() {
 
     const grid = document.getElementById('playerAnswerGrid');
     grid.innerHTML = '';
+    grid.style.cssText = ''; // reset any inline style from previous question
 
     if (type === 'open') {
-      const area = document.createElement('div');
-      area.className = 'open-answer-area';
-      area.innerHTML = `
-        <textarea class="open-answer-input" id="openInput" placeholder="Tapez votre réponse…" maxlength="120" rows="2"></textarea>
-        <button class="btn btn-primary btn-lg open-submit-btn" id="openSubmitBtn">✔ Valider ma réponse</button>
+      // Collapse the 2-col grid to a single centered column
+      grid.style.gridTemplateColumns = '1fr';
+
+      const card = document.createElement('div');
+      card.className = 'open-answer-card';
+      card.innerHTML = `
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem; text-align:center;">✍️ Tapez votre réponse puis validez</p>
+        <textarea class="open-answer-input" id="openInput" placeholder="Votre réponse…" maxlength="120" rows="3"></textarea>
+        <button class="btn btn-primary btn-lg" id="openSubmitBtn" style="width:100%; margin-top:0.75rem;">✔ Valider</button>
       `;
-      grid.appendChild(area);
+      grid.appendChild(card);
 
       const submitFn = () => {
         if (answered) return;

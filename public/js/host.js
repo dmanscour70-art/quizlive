@@ -130,15 +130,10 @@ socket.on('question:start', ({ question, index, total, timeLimit }) => {
     container.style.display = 'none';
     openFeed.style.display  = 'block';
     openFeed.innerHTML = `
-      <div style="background:var(--surface); border-radius:var(--radius-lg); padding:1.25rem; max-width:700px; margin:0 auto;">
-        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; flex-wrap:wrap;">
-          <span style="font-size:1.1rem;">✍️</span>
-          <span style="font-weight:700;">Questions ouvertes — réponses en direct</span>
-          <span style="font-size:0.85rem; background:rgba(56,161,105,0.15); color:var(--success); border-radius:999px; padding:0.2rem 0.75rem; font-weight:600; margin-left:auto;">
-            Bonne réponse : ${escHtml(question.correctAnswer || '')}
-          </span>
-        </div>
-        <div id="openAnswersList" style="display:flex; flex-direction:column; gap:0.4rem; max-height:320px; overflow-y:auto;"></div>
+      <div style="background:var(--surface); border-radius:var(--radius-lg); padding:2rem 1.5rem; max-width:700px; margin:0 auto; text-align:center; box-shadow:var(--shadow-sm);">
+        <div style="font-size:2.5rem; margin-bottom:0.75rem;">✍️</div>
+        <div style="font-size:1.1rem; font-weight:700; margin-bottom:0.4rem;">Mode Questions Ouvertes</div>
+        <div style="color:var(--text-muted); font-size:0.9rem;">Les réponses s'afficheront sur l'écran de résultats.</div>
       </div>
     `;
   } else {
@@ -161,19 +156,6 @@ socket.on('question:start', ({ question, index, total, timeLimit }) => {
   startTimer(timeLimit);
 });
 
-socket.on('host:open:answer', ({ name, text, isCorrect }) => {
-  const list = document.getElementById('openAnswersList');
-  if (!list) return;
-  const item = document.createElement('div');
-  item.style.cssText = `display:flex; align-items:center; gap:0.6rem; padding:0.45rem 0.75rem; border-radius:var(--radius); background:${isCorrect ? 'rgba(56,161,105,0.12)' : 'var(--card)'}; border-left:3px solid ${isCorrect ? 'var(--success)' : 'var(--border)'};`;
-  item.innerHTML = `
-    <span style="font-weight:700; font-size:0.85rem; color:var(--text-muted); min-width:80px; flex-shrink:0;">${escHtml(name)}</span>
-    <span style="flex:1; font-size:0.92rem;">${escHtml(text)}</span>
-    <span style="font-size:1rem;">${isCorrect ? '✅' : '❌'}</span>
-  `;
-  list.appendChild(item);
-  list.scrollTop = list.scrollHeight;
-});
 
 socket.on('host:answer:count', ({ answered, total }) => {
   totalPlayers = total;
