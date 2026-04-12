@@ -65,6 +65,27 @@ app.get('/api/quizzes', (req, res) => {
   })));
 });
 
+// Update a quiz
+app.put('/api/quiz/:id', (req, res) => {
+  const quiz = quizzes.get(req.params.id);
+  if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
+  const { title, questions, description, category } = req.body;
+  if (!title || !questions || questions.length === 0) {
+    return res.status(400).json({ error: 'Title and questions are required' });
+  }
+  quizzes.set(req.params.id, { ...quiz, title, questions, description: description || quiz.description, category: category || quiz.category });
+  res.json({ id: req.params.id });
+});
+
+// Delete a quiz (user-created only)
+app.delete('/api/quiz/:id', (req, res) => {
+  const quiz = quizzes.get(req.params.id);
+  if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
+  if (quiz.id.startsWith('preset_')) return res.status(403).json({ error: 'Les quiz prédéfinis ne peuvent pas être supprimés' });
+  quizzes.delete(req.params.id);
+  res.json({ ok: true });
+});
+
 // Create a game session from a quiz
 app.post('/api/game', (req, res) => {
   const { quizId } = req.body;
