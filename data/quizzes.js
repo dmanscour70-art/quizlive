@@ -493,6 +493,105 @@ module.exports = [
         timeLimit: 20
       }
     ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 6 – Culture IA
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_culture_ia',
+    title: '🌍 Culture IA',
+    category: 'IA',
+    description: 'Outils, entreprises, personnalités… Testez votre culture générale sur l\'intelligence artificielle.',
+    questions: [
+      {
+        text: 'Lequel de ces modèles N\'est PAS un LLM (modèle de langage) ?',
+        choices: ['GPT-4', 'Claude', 'Gemini', 'Stable Diffusion'],
+        correctIndex: 3,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel outil IA est spécialisé dans la génération de voix réalistes à partir de texte ?',
+        choices: ['Midjourney', 'Runway', 'ElevenLabs', 'Perplexity'],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Qui est le CEO d\'OpenAI ?',
+        choices: ['Elon Musk', 'Yann LeCun', 'Sundar Pichai', 'Sam Altman'],
+        correctIndex: 3,
+        timeLimit: 15
+      },
+      {
+        text: 'Quelle était la nature juridique d\'OpenAI à sa création en 2015 ?',
+        choices: [
+          'Entreprise privée cotée en bourse',
+          'Organisation à but non lucratif',
+          'Filiale de Microsoft',
+          'Joint-venture Google / Apple'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Lequel de ces outils N\'existe PAS ?',
+        choices: ['ChatGPT', 'Perplexity', 'NeuralScribe Pro', 'Mistral'],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Quelle entreprise a développé le modèle Llama ?',
+        choices: ['Google', 'OpenAI', 'Apple', 'Meta'],
+        correctIndex: 3,
+        timeLimit: 15
+      },
+      {
+        text: 'Quel outil IA est spécialisé dans la génération d\'images à partir d\'un texte ?',
+        choices: ['Midjourney', 'Perplexity', 'ElevenLabs', 'Zapier'],
+        correctIndex: 0,
+        timeLimit: 15
+      },
+      {
+        text: 'Laquelle de ces entreprises N\'a PAS développé de LLM grand public ?',
+        choices: ['OpenAI', 'Anthropic', 'Spotify', 'Mistral AI'],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Qu\'est-ce que le "prompt engineering" ?',
+        choices: [
+          'Un langage de programmation pour entraîner des IA',
+          'L\'art de rédiger des instructions efficaces pour obtenir de bons résultats d\'un modèle IA',
+          'Une technique pour compresser les modèles IA',
+          'La conception physique des puces GPU'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel outil Microsoft intègre l\'IA générative dans la suite Office (Word, Excel, Teams…) ?',
+        choices: ['Bing Chat', 'Azure OpenAI', 'Microsoft Copilot', 'Edge Intelligence'],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel modèle IA a battu les humains au jeu de Go en 2016, marquant un tournant historique ?',
+        choices: ['ChatGPT', 'Watson', 'AlphaGo', 'DeepBlue'],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Qu\'est-ce que "Suno" ?',
+        choices: [
+          'Un moteur de recherche IA',
+          'Un outil de génération de musique par IA',
+          'Un assistant vocal d\'Amazon',
+          'Un framework open source pour agents IA'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      }
+    ]
   }
 
 ];
