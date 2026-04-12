@@ -714,6 +714,66 @@ module.exports = [
         timeLimit: 20
       }
     ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 7 – Questions Ouvertes : Culture IA Débutant
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_open_culture',
+    title: '✍️ Culture IA — Questions Ouvertes Débutant',
+    category: 'IA',
+    description: 'Tapez vos réponses librement ! Des questions accessibles sur les acteurs, outils et concepts clés de l\'IA.',
+    questions: [
+      { text: 'Quel est le nom du CEO d\'OpenAI ?', type: 'open', correctAnswer: 'Sam Altman', timeLimit: 25 },
+      { text: 'Comment s\'appelle le chatbot d\'OpenAI lancé en novembre 2022 ?', type: 'open', correctAnswer: 'ChatGPT', timeLimit: 20 },
+      { text: 'Quel est le nom de l\'assistant IA intégré dans les produits Microsoft 365 ?', type: 'open', correctAnswer: 'Copilot', timeLimit: 25 },
+      { text: 'Quel est le nom du modèle IA de Google (anciennement appelé Bard) ?', type: 'open', correctAnswer: 'Gemini', timeLimit: 25 },
+      { text: 'Quelle entreprise a créé le modèle de langage Claude ?', type: 'open', correctAnswer: 'Anthropic', timeLimit: 20 },
+      { text: 'Quel est le nom de l\'outil IA de génération d\'images d\'OpenAI ?', type: 'open', correctAnswer: 'DALL-E', timeLimit: 25 },
+      { text: 'Quel moteur de recherche a intégré une IA générative en premier parmi les grands moteurs ?', type: 'open', correctAnswer: 'Bing', timeLimit: 25 },
+      { text: 'Quel outil vocal d\'Apple utilise l\'IA depuis 2011 ?', type: 'open', correctAnswer: 'Siri', timeLimit: 20 }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 8 – Questions Ouvertes : LLM & Prompt Engineering
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_open_llm',
+    title: '✍️ LLM & Prompt Engineering — Questions Ouvertes',
+    category: 'IA',
+    description: 'Répondez librement à des questions sur les LLM, le prompt engineering et les concepts techniques des modèles d\'IA.',
+    questions: [
+      { text: 'Que signifie l\'acronyme LLM ?', type: 'open', correctAnswer: 'Large Language Model', timeLimit: 30 },
+      { text: 'Quel terme désigne une instruction envoyée à un LLM pour guider sa réponse ?', type: 'open', correctAnswer: 'Prompt', timeLimit: 20 },
+      { text: 'Quelle unité de base de texte un LLM traite-t-il (sous-mot ou caractère) ?', type: 'open', correctAnswer: 'Token', timeLimit: 25 },
+      { text: 'Quel terme désigne la tendance d\'un LLM à inventer des faits faux avec assurance ?', type: 'open', correctAnswer: 'Hallucination', timeLimit: 25 },
+      { text: 'Quelle technique affine un modèle pré-entraîné sur des données spécifiques à une tâche ?', type: 'open', correctAnswer: 'Fine-tuning', timeLimit: 30 },
+      { text: 'Que signifie RAG dans le contexte des LLM ?', type: 'open', correctAnswer: 'Retrieval Augmented Generation', timeLimit: 35 },
+      { text: 'Quelle entreprise a créé le modèle open source Llama ?', type: 'open', correctAnswer: 'Meta', timeLimit: 20 },
+      { text: 'Quel terme désigne la quantité de texte qu\'un LLM peut traiter en une seule fois ?', type: 'open', correctAnswer: 'Contexte', timeLimit: 30 }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 9 – Questions Ouvertes : Agents & Automatisation IA
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_open_agents',
+    title: '✍️ Agents & Automatisation IA — Questions Ouvertes',
+    category: 'IA',
+    description: 'Des questions ouvertes sur les agents IA, les outils d\'automatisation et les workflows intelligents.',
+    questions: [
+      { text: 'Quel outil low-code de Microsoft permet de créer des automatisations sans coder ?', type: 'open', correctAnswer: 'Power Automate', timeLimit: 25 },
+      { text: 'Comment appelle-t-on un LLM capable d\'utiliser des outils externes (web, code, API) ?', type: 'open', correctAnswer: 'Agent', timeLimit: 25 },
+      { text: 'Quel outil no-code populaire connecte des applications via des workflows visuels (concurrent de Zapier) ?', type: 'open', correctAnswer: 'Make', timeLimit: 30 },
+      { text: 'Quel framework Python open source est très utilisé pour construire des agents et chaînes LLM ?', type: 'open', correctAnswer: 'LangChain', timeLimit: 30 },
+      { text: 'Quel terme désigne un ensemble d\'étapes automatisées qui s\'enchaînent pour accomplir une tâche ?', type: 'open', correctAnswer: 'Workflow', timeLimit: 25 },
+      { text: 'Quel protocole ouvert d\'Anthropic permet aux agents IA d\'utiliser des outils via des serveurs standardisés ?', type: 'open', correctAnswer: 'MCP', timeLimit: 30 },
+      { text: 'Quel outil de Microsoft permet de créer des agents IA sans coder via une interface visuelle ?', type: 'open', correctAnswer: 'Copilot Studio', timeLimit: 30 },
+      { text: 'Quel terme désigne la capacité d\'un agent à se souvenir d\'informations entre plusieurs échanges ?', type: 'open', correctAnswer: 'Mémoire', timeLimit: 25 }
+    ]
   }
 
 ];

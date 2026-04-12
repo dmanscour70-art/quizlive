@@ -12,6 +12,7 @@ let myScore  = 0;
 let lastAnswerCorrect = null;
 let lastPoints = 0;
 let lastMyAnswerIndex = null;
+let lastMyAnswerText  = null;
 let timerInterval = null;
 let timeoutTimer = null;   // ← timeout "temps écoulé", doit être annulable
 let answered = false;
@@ -126,63 +127,106 @@ function connectAndJoin() {
     }, 1000);
   });
 
-  socket.on('question:start', ({ text, choices, index, total, timeLimit }) => {
+  socket.on('question:start', ({ type, text, choices, index, total, timeLimit }) => {
     answered = false;
-    currentTimeLimit = timeLimit;
+    lastMyAnswerIndex = null;
+    lastMyAnswerText  = null;
+    currentTimeLimit  = timeLimit;
     clearInterval(timerInterval);
-    clearTimeout(timeoutTimer);   // ← annule le timeout de la question précédente
+    clearTimeout(timeoutTimer);
 
-    // Build question screen
-    document.getElementById('pQText').textContent = text;
+    document.getElementById('pQText').textContent  = text;
     document.getElementById('pQIndex').textContent = `${index + 1} / ${total}`;
 
     const grid = document.getElementById('playerAnswerGrid');
     grid.innerHTML = '';
 
-    choices.forEach((ch, ci) => {
-      if (!ch?.trim()) return;
-      const btn = document.createElement('button');
-      btn.className = 'player-ans-btn';
-      btn.innerHTML = `<span class="icon">${ICONS[ci]}</span><span>${ch}</span>`;
-      btn.addEventListener('click', () => {
+    if (type === 'open') {
+      const area = document.createElement('div');
+      area.className = 'open-answer-area';
+      area.innerHTML = `
+        <textarea class="open-answer-input" id="openInput" placeholder="Tapez votre réponse…" maxlength="120" rows="2"></textarea>
+        <button class="btn btn-primary btn-lg open-submit-btn" id="openSubmitBtn">✔ Valider ma réponse</button>
+      `;
+      grid.appendChild(area);
+
+      const submitFn = () => {
         if (answered) return;
+        const val = document.getElementById('openInput').value.trim();
+        if (!val) return;
         answered = true;
-
-        // Disable all buttons and highlight selected
-        grid.querySelectorAll('.player-ans-btn').forEach((b, i) => {
-          b.disabled = true;
-          b.style.opacity = i === ci ? '1' : '0.35';
-          b.style.transform = i === ci ? 'scale(1.05)' : 'scale(0.95)';
-        });
-
-        clearTimeout(timeoutTimer);  // ← player a répondu, plus besoin du timeout
-        lastMyAnswerIndex = ci;
-        socket.emit('player:answer', { pin, answerIndex: ci });
-
-        // Show waiting screen
+        clearTimeout(timeoutTimer);
+        lastMyAnswerText = val;
+        document.getElementById('openInput').disabled = true;
+        document.getElementById('openSubmitBtn').disabled = true;
+        socket.emit('player:answer', { pin, answerText: val });
         setTimeout(() => {
           showScreen('waitingScreen');
           document.getElementById('answerResult').innerHTML = `<div style="font-size:3rem;">⏳</div><p style="color:var(--text-muted); font-size:1.1rem;">Réponse envoyée !</p>`;
           document.getElementById('pointsBadge').style.display = 'none';
-        }, 400);
+        }, 300);
+      };
+
+      document.getElementById('openSubmitBtn').addEventListener('click', submitFn);
+      document.getElementById('openInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitFn(); }
       });
-      grid.appendChild(btn);
-    });
+
+      timeoutTimer = setTimeout(() => {
+        if (!answered) {
+          answered = true;
+          const inp = document.getElementById('openInput');
+          const btn = document.getElementById('openSubmitBtn');
+          if (inp) inp.disabled = true;
+          if (btn) btn.disabled = true;
+          showScreen('waitingScreen');
+          document.getElementById('answerResult').innerHTML =
+            `<div style="font-size:3rem;">⌛</div><p style="color:var(--text-muted); font-size:1.1rem;">Temps écoulé !</p>`;
+          document.getElementById('pointsBadge').style.display = 'none';
+        }
+      }, timeLimit * 1000 + 300);
+
+    } else {
+      // QCM
+      (choices || []).forEach((ch, ci) => {
+        if (!ch?.trim()) return;
+        const btn = document.createElement('button');
+        btn.className = 'player-ans-btn';
+        btn.innerHTML = `<span class="icon">${ICONS[ci]}</span><span>${ch}</span>`;
+        btn.addEventListener('click', () => {
+          if (answered) return;
+          answered = true;
+          grid.querySelectorAll('.player-ans-btn').forEach((b, i) => {
+            b.disabled = true;
+            b.style.opacity = i === ci ? '1' : '0.35';
+            b.style.transform = i === ci ? 'scale(1.05)' : 'scale(0.95)';
+          });
+          clearTimeout(timeoutTimer);
+          lastMyAnswerIndex = ci;
+          socket.emit('player:answer', { pin, answerIndex: ci });
+          setTimeout(() => {
+            showScreen('waitingScreen');
+            document.getElementById('answerResult').innerHTML = `<div style="font-size:3rem;">⏳</div><p style="color:var(--text-muted); font-size:1.1rem;">Réponse envoyée !</p>`;
+            document.getElementById('pointsBadge').style.display = 'none';
+          }, 400);
+        });
+        grid.appendChild(btn);
+      });
+
+      timeoutTimer = setTimeout(() => {
+        if (!answered) {
+          answered = true;
+          grid.querySelectorAll('.player-ans-btn').forEach(b => b.disabled = true);
+          showScreen('waitingScreen');
+          document.getElementById('answerResult').innerHTML =
+            `<div style="font-size:3rem;">⌛</div><p style="color:var(--text-muted); font-size:1.1rem;">Temps écoulé !</p>`;
+          document.getElementById('pointsBadge').style.display = 'none';
+        }
+      }, timeLimit * 1000 + 300);
+    }
 
     showScreen('questionScreen');
     startTimer(timeLimit);
-
-    // Auto-show timeout message if time runs out without answering
-    timeoutTimer = setTimeout(() => {
-      if (!answered) {
-        answered = true;
-        grid.querySelectorAll('.player-ans-btn').forEach(b => b.disabled = true);
-        showScreen('waitingScreen');
-        document.getElementById('answerResult').innerHTML =
-          `<div style="font-size:3rem;">⌛</div><p style="color:var(--text-muted); font-size:1.1rem;">Temps écoulé !</p>`;
-        document.getElementById('pointsBadge').style.display = 'none';
-      }
-    }, timeLimit * 1000 + 300);
   });
 
   socket.on('player:answer:confirmed', ({ isCorrect, points }) => {
@@ -203,9 +247,11 @@ function connectAndJoin() {
     }
   });
 
-  socket.on('question:results', ({ correctIndex, questionText, choices, leaderboard, distribution, isLast }) => {
+  socket.on('question:results', (data) => {
     clearInterval(timerInterval);
     showScreen('revealScreen');
+
+    const { type, questionText, leaderboard } = data;
 
     // Result header
     const revealIcon  = document.getElementById('revealIcon');
@@ -228,15 +274,38 @@ function connectAndJoin() {
     const qTextEl = document.getElementById('revealQText');
     if (qTextEl) qTextEl.textContent = questionText || '';
 
-    // Answer recap — show all answers, highlight correct/player's choice
     const ansGrid = document.getElementById('revealAnswersGrid');
-    if (ansGrid && choices) {
-      ansGrid.innerHTML = '';
-      const myLastIndex = lastMyAnswerIndex;
-      choices.forEach((ch, ci) => {
+    ansGrid.innerHTML = '';
+
+    if (type === 'open') {
+      const { correctAnswer } = data;
+      // Bonne réponse
+      const correctCard = document.createElement('div');
+      correctCard.className = 'result-ans-btn correct';
+      correctCard.style.cssText = 'flex-direction:column; align-items:flex-start; gap:0.2rem;';
+      correctCard.innerHTML = `
+        <span style="font-size:0.72rem; opacity:0.7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Bonne réponse</span>
+        <span style="font-size:1.05rem; font-weight:700;">${escHtml(correctAnswer || '')}</span>
+      `;
+      ansGrid.appendChild(correctCard);
+      // Player's own answer
+      if (lastMyAnswerText) {
+        const myCard = document.createElement('div');
+        myCard.className = `result-ans-btn ${lastAnswerCorrect === false ? 'incorrect' : lastAnswerCorrect === true ? 'correct' : ''}`;
+        myCard.style.cssText = 'flex-direction:column; align-items:flex-start; gap:0.2rem; opacity:0.85;';
+        myCard.innerHTML = `
+          <span style="font-size:0.72rem; opacity:0.7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Votre réponse</span>
+          <span style="font-size:1.05rem;">${escHtml(lastMyAnswerText)}</span>
+        `;
+        ansGrid.appendChild(myCard);
+      }
+    } else {
+      // QCM recap
+      const { correctIndex, choices } = data;
+      (choices || []).forEach((ch, ci) => {
         if (!ch?.trim()) return;
-        const isCorrect  = ci === correctIndex;
-        const isMine     = ci === myLastIndex;
+        const isCorrect = ci === correctIndex;
+        const isMine    = ci === lastMyAnswerIndex;
         const btn = document.createElement('div');
         btn.className = `result-ans-btn ${isCorrect ? 'correct' : 'incorrect'}`;
         btn.dataset.index = ci;
@@ -268,6 +337,7 @@ function connectAndJoin() {
 
     lastAnswerCorrect = null;
     lastMyAnswerIndex = null;
+    lastMyAnswerText  = null;
   });
 
   socket.on('game:end', ({ leaderboard }) => {

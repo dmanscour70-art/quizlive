@@ -121,23 +121,58 @@ socket.on('question:start', ({ question, index, total, timeLimit }) => {
   document.getElementById('qTextDisplay').textContent = question.text;
   document.getElementById('answerCount').textContent = `0 / ${totalPlayers} réponses`;
 
-  // Render answer buttons
   const container = document.getElementById('hostAnswers');
+  const openFeed  = document.getElementById('openAnswersFeed');
   container.innerHTML = '';
-  question.choices.forEach((ch, ci) => {
-    if (!ch.trim()) return;
-    const btn = document.createElement('div');
-    btn.className = 'host-ans-btn';
-    btn.dataset.index = ci;
-    btn.innerHTML = `<span style="font-size:1.3rem;">${ICONS[ci]}</span> ${ch}`;
-    if (ci === question.correctIndex) {
-      btn.classList.add('correct');
-      btn.innerHTML += `<span class="ans-correct-badge">✓ Bonne réponse</span>`;
-    }
-    container.appendChild(btn);
-  });
+  openFeed.innerHTML  = '';
+
+  if (question.type === 'open') {
+    container.style.display = 'none';
+    openFeed.style.display  = 'block';
+    openFeed.innerHTML = `
+      <div style="background:var(--surface); border-radius:var(--radius-lg); padding:1.25rem; max-width:700px; margin:0 auto;">
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; flex-wrap:wrap;">
+          <span style="font-size:1.1rem;">✍️</span>
+          <span style="font-weight:700;">Questions ouvertes — réponses en direct</span>
+          <span style="font-size:0.85rem; background:rgba(56,161,105,0.15); color:var(--success); border-radius:999px; padding:0.2rem 0.75rem; font-weight:600; margin-left:auto;">
+            Bonne réponse : ${escHtml(question.correctAnswer || '')}
+          </span>
+        </div>
+        <div id="openAnswersList" style="display:flex; flex-direction:column; gap:0.4rem; max-height:320px; overflow-y:auto;"></div>
+      </div>
+    `;
+  } else {
+    container.style.display = 'block';
+    openFeed.style.display  = 'none';
+    question.choices.forEach((ch, ci) => {
+      if (!ch.trim()) return;
+      const btn = document.createElement('div');
+      btn.className = 'host-ans-btn';
+      btn.dataset.index = ci;
+      btn.innerHTML = `<span style="font-size:1.3rem;">${ICONS[ci]}</span> ${ch}`;
+      if (ci === question.correctIndex) {
+        btn.classList.add('correct');
+        btn.innerHTML += `<span class="ans-correct-badge">✓ Bonne réponse</span>`;
+      }
+      container.appendChild(btn);
+    });
+  }
 
   startTimer(timeLimit);
+});
+
+socket.on('host:open:answer', ({ name, text, isCorrect }) => {
+  const list = document.getElementById('openAnswersList');
+  if (!list) return;
+  const item = document.createElement('div');
+  item.style.cssText = `display:flex; align-items:center; gap:0.6rem; padding:0.45rem 0.75rem; border-radius:var(--radius); background:${isCorrect ? 'rgba(56,161,105,0.12)' : 'var(--card)'}; border-left:3px solid ${isCorrect ? 'var(--success)' : 'var(--border)'};`;
+  item.innerHTML = `
+    <span style="font-weight:700; font-size:0.85rem; color:var(--text-muted); min-width:80px; flex-shrink:0;">${escHtml(name)}</span>
+    <span style="flex:1; font-size:0.92rem;">${escHtml(text)}</span>
+    <span style="font-size:1rem;">${isCorrect ? '✅' : '❌'}</span>
+  `;
+  list.appendChild(item);
+  list.scrollTop = list.scrollHeight;
 });
 
 socket.on('host:answer:count', ({ answered, total }) => {
@@ -145,52 +180,90 @@ socket.on('host:answer:count', ({ answered, total }) => {
   document.getElementById('answerCount').textContent = `${answered} / ${total} réponses`;
 });
 
-socket.on('question:results', ({ correctIndex, questionText, choices, leaderboard, distribution, isLast }) => {
+socket.on('question:results', (data) => {
   stopTimer();
   hideAll();
   show('resultsScreen');
 
-  // Question text recap
+  const { type, questionText, leaderboard, isLast } = data;
+
   document.getElementById('resultQText').textContent = questionText || currentQuestion?.text || '';
 
-  // Answer buttons with correct/incorrect highlight
-  const ansGrid = document.getElementById('resultAnswersGrid');
+  const ansGrid  = document.getElementById('resultAnswersGrid');
+  const chart    = document.getElementById('distChart');
+  const distTitle = chart.previousElementSibling; // "Répartition des réponses" label
   ansGrid.innerHTML = '';
-  (choices || currentQuestion?.choices || []).forEach((ch, ci) => {
-    if (!ch?.trim()) return;
-    const btn = document.createElement('div');
-    btn.className = `result-ans-btn ${ci === correctIndex ? 'correct' : 'incorrect'}`;
-    btn.dataset.index = ci;
-    btn.innerHTML = `
-      <span style="font-size:1.1rem;">${ICONS[ci]}</span>
-      <span>${escHtml(ch)}</span>
-      ${ci === correctIndex ? '<span class="result-check">✓</span>' : ''}
+  chart.innerHTML   = '';
+
+  if (type === 'open') {
+    const { correctAnswer, playerAnswers } = data;
+
+    // Correct answer banner
+    const correctDiv = document.createElement('div');
+    correctDiv.className = 'result-ans-btn correct';
+    correctDiv.style.cssText = 'flex-direction:column; align-items:flex-start; gap:0.2rem; margin-bottom:0.75rem;';
+    correctDiv.innerHTML = `
+      <span style="font-size:0.72rem; opacity:0.7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Bonne réponse</span>
+      <span style="font-size:1.1rem; font-weight:800;">${escHtml(correctAnswer || '')}</span>
     `;
-    ansGrid.appendChild(btn);
-  });
+    ansGrid.appendChild(correctDiv);
 
-  // Distribution chart
-  const chart = document.getElementById('distChart');
-  chart.innerHTML = '';
-  const maxVal = Math.max(...distribution, 1);
-  const displayChoices = choices || currentQuestion?.choices || [];
+    // Replace chart area with player answer list
+    if (distTitle) distTitle.textContent = 'Réponses des joueurs';
+    const correctCount = playerAnswers.filter(p => p.isCorrect).length;
+    playerAnswers.forEach(({ name, text, isCorrect, answered }) => {
+      const item = document.createElement('div');
+      item.style.cssText = `display:flex; align-items:center; gap:0.6rem; padding:0.4rem 0.65rem; border-radius:var(--radius); background:${isCorrect ? 'rgba(56,161,105,0.12)' : 'var(--card)'}; border-left:3px solid ${isCorrect ? 'var(--success)' : answered ? 'var(--danger)' : 'var(--border)'}; margin-bottom:0.3rem; font-size:0.87rem;`;
+      item.innerHTML = `
+        <span style="font-weight:700; color:var(--text-muted); min-width:75px; flex-shrink:0; font-size:0.82rem;">${escHtml(name)}</span>
+        <span style="flex:1;">${answered ? escHtml(text) : '<em style="opacity:0.45;">Sans réponse</em>'}</span>
+        <span>${isCorrect ? '✅' : answered ? '❌' : '—'}</span>
+      `;
+      chart.appendChild(item);
+    });
+    const summary = document.createElement('div');
+    summary.style.cssText = 'margin-top:0.6rem; font-size:0.8rem; color:var(--text-muted); font-weight:600;';
+    summary.textContent = `${correctCount} / ${playerAnswers.length} bonne${correctCount > 1 ? 's' : ''} réponse${correctCount > 1 ? 's' : ''}`;
+    chart.appendChild(summary);
 
-  distribution.forEach((count, ci) => {
-    if (!displayChoices[ci]?.trim()) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'dist-bar-wrap';
-    const heightPct = Math.round((count / maxVal) * 100);
-    const isCorrect = ci === correctIndex;
-    wrap.innerHTML = `
-      <div class="dist-count">${count}</div>
-      <div class="dist-bar ${isCorrect ? 'correct' : 'incorrect'}" data-index="${ci}"
-        style="height:${heightPct}%; background:var(--ans-${ci});"></div>
-      <div class="dist-icon">${ICONS[ci]}</div>
-    `;
-    chart.appendChild(wrap);
-  });
+  } else {
+    const { correctIndex, choices, distribution } = data;
 
-  // Leaderboard
+    // Answer buttons
+    (choices || currentQuestion?.choices || []).forEach((ch, ci) => {
+      if (!ch?.trim()) return;
+      const btn = document.createElement('div');
+      btn.className = `result-ans-btn ${ci === correctIndex ? 'correct' : 'incorrect'}`;
+      btn.dataset.index = ci;
+      btn.innerHTML = `
+        <span style="font-size:1.1rem;">${ICONS[ci]}</span>
+        <span>${escHtml(ch)}</span>
+        ${ci === correctIndex ? '<span class="result-check">✓</span>' : ''}
+      `;
+      ansGrid.appendChild(btn);
+    });
+
+    // Distribution chart
+    if (distTitle) distTitle.textContent = 'Répartition des réponses';
+    const maxVal = Math.max(...distribution, 1);
+    const displayChoices = choices || currentQuestion?.choices || [];
+    distribution.forEach((count, ci) => {
+      if (!displayChoices[ci]?.trim()) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'dist-bar-wrap';
+      const heightPct = Math.round((count / maxVal) * 100);
+      const isCorrect = ci === correctIndex;
+      wrap.innerHTML = `
+        <div class="dist-count">${count}</div>
+        <div class="dist-bar ${isCorrect ? 'correct' : 'incorrect'}" data-index="${ci}"
+          style="height:${heightPct}%; background:var(--ans-${ci});"></div>
+        <div class="dist-icon">${ICONS[ci]}</div>
+      `;
+      chart.appendChild(wrap);
+    });
+  }
+
+  // Leaderboard (same for both modes)
   const lb = document.getElementById('resultsLeaderboard');
   lb.innerHTML = '';
   if (leaderboard.length === 0) {

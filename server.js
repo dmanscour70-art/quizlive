@@ -186,7 +186,7 @@ io.on('connection', (socket) => {
     io.to(`game:${pin}`).emit('lobby:update', { count: game.players.size, players: playerList });
   });
 
-  socket.on('player:answer', ({ pin, answerIndex }) => {
+  socket.on('player:answer', ({ pin, answerIndex, answerText }) => {
     const game = games.get(pin);
     if (!game || game.state !== 'question') return;
 
@@ -198,16 +198,34 @@ io.on('connection', (socket) => {
     const elapsed = Date.now() - game.questionStartTime;
     const timeLimit = (q.timeLimit || 20) * 1000;
 
-    const isCorrect = answerIndex === q.correctIndex;
+    let isCorrect = false;
     let points = 0;
-    if (isCorrect) {
-      const ratio = Math.max(0, 1 - elapsed / timeLimit);
-      points = Math.round(500 + 500 * ratio);
+
+    if (q.type === 'open') {
+      const norm = s => String(s || '').trim().toLowerCase().replace(/[-\s.]/g, '');
+      isCorrect = norm(answerText) === norm(q.correctAnswer);
+      if (isCorrect) {
+        const ratio = Math.max(0, 1 - elapsed / timeLimit);
+        points = Math.round(500 + 500 * ratio);
+      }
+      player.answers[game.currentQuestion] = { answerText: String(answerText || '').trim(), isCorrect, points, elapsed };
+      if (game.hostSocketId) {
+        io.to(game.hostSocketId).emit('host:open:answer', {
+          name: player.name,
+          text: String(answerText || '').trim(),
+          isCorrect
+        });
+      }
+    } else {
+      isCorrect = answerIndex === q.correctIndex;
+      if (isCorrect) {
+        const ratio = Math.max(0, 1 - elapsed / timeLimit);
+        points = Math.round(500 + 500 * ratio);
+      }
+      player.answers[game.currentQuestion] = { answerIndex, isCorrect, points, elapsed };
     }
 
-    player.answers[game.currentQuestion] = { answerIndex, isCorrect, points, elapsed };
     player.score += points;
-
     socket.emit('player:answer:confirmed', { isCorrect, points });
 
     const answered = [...game.players.values()].filter(
@@ -215,10 +233,7 @@ io.on('connection', (socket) => {
     ).length;
 
     if (game.hostSocketId) {
-      io.to(game.hostSocketId).emit('host:answer:count', {
-        answered,
-        total: game.players.size
-      });
+      io.to(game.hostSocketId).emit('host:answer:count', { answered, total: game.players.size });
     }
 
     if (answered === game.players.size) {
@@ -275,11 +290,11 @@ function startNextQuestion(pin) {
 
   game.state = 'question';
   const raw = game.quiz.questions[game.currentQuestion];
-  const q   = shuffleQuestion(raw);           // shuffled version
-  game.currentShuffledQuestion = q;           // store for validation + results
+  const q   = raw.type === 'open' ? raw : shuffleQuestion(raw);
+  game.currentShuffledQuestion = q;
   const timeLimit = q.timeLimit || 20;
 
-  // Host gets full question (with correctIndex)
+  // Host gets full question (with correctIndex / correctAnswer)
   if (game.hostSocketId) {
     io.to(game.hostSocketId).emit('question:start', {
       question: q,
@@ -290,14 +305,11 @@ function startNextQuestion(pin) {
   }
 
   // Players get question WITHOUT correct answer
-  const playerPayload = {
-    text: q.text,
-    choices: q.choices,
-    image: q.image || null,
-    index: game.currentQuestion,
-    total: game.quiz.questions.length,
-    timeLimit
-  };
+  const playerPayload = q.type === 'open'
+    ? { type: 'open', text: q.text, image: q.image || null,
+        index: game.currentQuestion, total: game.quiz.questions.length, timeLimit }
+    : { type: 'qcm', text: q.text, choices: q.choices, image: q.image || null,
+        index: game.currentQuestion, total: game.quiz.questions.length, timeLimit };
   for (const [sid] of game.players) {
     io.to(sid).emit('question:start', playerPayload);
   }
@@ -323,22 +335,42 @@ function showQuestionResults(pin) {
     .slice(0, 5)
     .map((p, i) => ({ rank: i + 1, name: p.name, score: p.score }));
 
-  const distribution = new Array(q.choices.length).fill(0);
-  for (const player of game.players.values()) {
-    const ans = player.answers[game.currentQuestion];
-    if (ans !== undefined) distribution[ans.answerIndex]++;
-  }
-
   const isLast = game.currentQuestion >= game.quiz.questions.length - 1;
 
-  io.to(`game:${pin}`).emit('question:results', {
-    correctIndex: q.correctIndex,
-    questionText: q.text,
-    choices: q.choices,
-    leaderboard,
-    distribution,
-    isLast
-  });
+  if (q.type === 'open') {
+    const playerAnswers = [...game.players.values()].map(p => {
+      const ans = p.answers[game.currentQuestion];
+      return {
+        name: p.name,
+        text: ans ? ans.answerText : '',
+        isCorrect: ans ? ans.isCorrect : false,
+        answered: ans !== undefined
+      };
+    });
+    io.to(`game:${pin}`).emit('question:results', {
+      type: 'open',
+      correctAnswer: q.correctAnswer,
+      questionText: q.text,
+      playerAnswers,
+      leaderboard,
+      isLast
+    });
+  } else {
+    const distribution = new Array(q.choices.length).fill(0);
+    for (const player of game.players.values()) {
+      const ans = player.answers[game.currentQuestion];
+      if (ans !== undefined) distribution[ans.answerIndex]++;
+    }
+    io.to(`game:${pin}`).emit('question:results', {
+      type: 'qcm',
+      correctIndex: q.correctIndex,
+      questionText: q.text,
+      choices: q.choices,
+      leaderboard,
+      distribution,
+      isLast
+    });
+  }
 }
 
 function endGame(pin) {
