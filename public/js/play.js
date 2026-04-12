@@ -6,6 +6,7 @@ let playerName = params.get('name') ? decodeURIComponent(params.get('name')) : '
 const AVATARS = ['🐯','🦊','🐸','🐼','🦁','🐺','🦋','🐬','🦅','🐲','🐙','🦄','🐻','🐨','🦉'];
 const ICONS   = ['▲', '◆', '●', '★'];
 
+let socket;
 let myAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
 let myScore  = 0;
 let lastAnswerCorrect = null;
@@ -86,8 +87,6 @@ if (!pin || !playerName) {
 }
 
 /* ── Socket ─────────────────────────────────────────────────────────────── */
-let socket;
-
 function connectAndJoin() {
   showScreen('connectingScreen');
   socket = io();
