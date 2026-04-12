@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solo – Mindeon School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { overflow-y: auto; }
+
+    /* ── Quiz screen ────────────────────────────────────────────────────── */
+    #quizScreen {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    .quiz-topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.875rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .quiz-body {
+      flex: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1.5rem 1rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .q-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+      line-height: 1.4;
+    }
+    .local-answer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .local-ans-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.1rem;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.1s;
+      min-height: 70px;
+      word-break: break-word;
+      text-align: left;
+      box-shadow: var(--shadow-sm);
+    }
+    .local-ans-btn:nth-child(1) { background: var(--ans-0); }
+    .local-ans-btn:nth-child(2) { background: var(--ans-1); }
+    .local-ans-btn:nth-child(3) { background: var(--ans-2); }
+    .local-ans-btn:nth-child(4) { background: var(--ans-3); }
+    .local-ans-btn:hover  { transform: scale(1.02); filter: brightness(1.07); }
+    .local-ans-btn:active { transform: scale(0.96); }
+    .local-ans-btn:disabled { cursor: not-allowed; }
+    .local-ans-btn.correct   { outline: 3px solid #1a1a2e; outline-offset: 2px; filter: brightness(1.05); }
+    .local-ans-btn.incorrect { opacity: 0.3; }
+    .local-ans-btn.selected-wrong { opacity: 0.6; outline: 3px solid var(--danger); outline-offset: 2px; }
+
+    /* ── Result feedback ────────────────────────────────────────────────── */
+    .feedback-bar {
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 700;
+      animation: slideUp 0.3s ease;
+    }
+    .feedback-bar.correct   { background: rgba(56,161,105,0.12); border: 1.5px solid var(--success); color: var(--success); }
+    .feedback-bar.incorrect { background: rgba(229,62,62,0.1);   border: 1.5px solid var(--danger);  color: var(--danger); }
+    @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+    .next-btn-wrap { text-align: center; }
+
+    /* ── Progress ───────────────────────────────────────────────────────── */
+    .q-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+    .score-live { font-size: 0.95rem; font-weight: 800; color: var(--accent); margin-left: auto; white-space: nowrap; }
+
+    /* ── Final ──────────────────────────────────────────────────────────── */
+    #finalScreen { max-width: 540px; margin: 0 auto; padding: 2.5rem 1.5rem; text-align: center; }
+    .final-score-big {
+      font-size: 4rem; font-weight: 900; color: var(--accent);
+      animation: bounceIn 0.5s ease;
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem; margin: 1.5rem 0;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-val  { font-size: 1.8rem; font-weight: 900; }
+    .stat-lbl  { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-val.green  { color: var(--success); }
+    .stat-val.red    { color: var(--danger); }
+    .stat-val.purple { color: var(--accent); }
+
+    .history-list { text-align: left; margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .history-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .history-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .history-q    { font-weight: 600; color: var(--text); line-height: 1.4; }
+    .history-a    { color: var(--text-muted); font-size: 0.82rem; margin-top: 0.2rem; }
+    .history-pts  { margin-left: auto; font-weight: 800; color: var(--accent2); white-space: nowrap; flex-shrink: 0; }
+
+    @media (max-width: 520px) {
+      .local-answer-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div class="page" id="loadingScreen">
+    <div class="navbar-logo" style="font-size:2rem; background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;">Mindeon School</div>
+    <p style="color:var(--text-muted); margin-top:1rem;">Chargement<span class="waiting-dots"></span></p>
+  </div>
+
+  <!-- Quiz -->
+  <div class="hidden" id="quizScreen">
+    <div class="quiz-topbar">
+      <a href="/" class="btn btn-ghost btn-sm">← Quitter</a>
+      <div style="flex:1; min-width:0;">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+        </div>
+      </div>
+      <div class="q-counter" id="qCounter">1 / 10</div>
+      <div class="timer-ring" style="width:44px;height:44px;">
+        <svg viewBox="0 0 80 80" style="width:44px;height:44px;">
+          <circle class="timer-track" cx="40" cy="40" r="33"/>
+          <circle class="timer-fill" id="timerCircle" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-number" id="timerNumber" style="font-size:0.85rem;">20</div>
+      </div>
+      <div class="score-live" id="scoreLive">0 pts</div>
+    </div>
+
+    <div class="quiz-body">
+      <div class="q-card" id="questionText">...</div>
+      <div class="local-answer-grid" id="answerGrid"></div>
+      <div id="feedbackArea"></div>
+      <div class="next-btn-wrap hidden" id="nextWrap">
+        <button class="btn btn-primary btn-lg" id="nextBtn">Question suivante →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final -->
+  <div class="hidden page" id="finalScreen">
+    <div style="max-width:560px; width:100%; padding:2rem 1rem 3rem;">
+      <div style="text-align:center; margin-bottom:2rem;">
+        <div id="finalEmoji" style="font-size:4rem; margin-bottom:0.5rem;"></div>
+        <h1 style="margin-bottom:0.25rem;">Quiz terminé !</h1>
+        <p style="color:var(--text-muted);" id="quizTitleFinal"></p>
+        <div class="final-score-big" id="finalScore">0</div>
+        <p style="color:var(--text-muted); font-size:0.9rem;">points</p>
+      </div>
+
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem;">
+        <button class="btn btn-primary" id="replayBtn">🔁 Rejouer</button>
+        <a href="/" class="btn btn-secondary">🏠 Accueil</a>
+      </div>
+
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+  <script>
+    const ICONS = ['▲', '◆', '●', '★'];
+    const params  = new URLSearchParams(window.location.search);
+    const quizId  = params.get('quiz');
+    if (!quizId) window.location.href = '/';
+
+    let quiz, questions, currentIndex, score, timerInterval, answered;
+    let history = [];
+
+    /* ── Shuffle ─────────────────────────────────────────────────────────── */
+    function shuffleQuestion(q) {
+      const order = q.choices.map((_, i) => i);
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      return { ...q, choices: order.map(i => q.choices[i]), correctIndex: order.indexOf(q.correctIndex) };
+    }
+
+    /* ── Load quiz ───────────────────────────────────────────────────────── */
+    async function loadQuiz() {
+      try {
+        const res  = await fetch(`/api/quiz/${quizId}`);
+        if (!res.ok) throw new Error();
+        quiz      = await res.json();
+        questions = quiz.questions.map(shuffleQuestion);
+        startQuiz();
+      } catch {
+        document.getElementById('loadingScreen').innerHTML =
+          '<p style="color:var(--danger); font-weight:700;">Quiz introuvable.</p><a href="/" class="btn btn-secondary" style="margin-top:1rem;">← Retour</a>';
+      }
+    }
+
+    /* ── Start ───────────────────────────────────────────────────────────── */
+    function startQuiz() {
+      currentIndex = 0;
+      score        = 0;
+      history      = [];
+      show('quizScreen');
+      hide('loadingScreen');
+      showQuestion();
+    }
+
+    /* ── Show question ───────────────────────────────────────────────────── */
+    function showQuestion() {
+      answered = false;
+      const q   = questions[currentIndex];
+      const pct = Math.round((currentIndex / questions.length) * 100);
+
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('qCounter').textContent     = `${currentIndex + 1} / ${questions.length}`;
+      document.getElementById('questionText').textContent = q.text;
+      document.getElementById('feedbackArea').innerHTML   = '';
+      document.getElementById('nextWrap').classList.add('hidden');
+
+      // Answers
+      const grid = document.getElementById('answerGrid');
+      grid.innerHTML = '';
+      q.choices.forEach((ch, ci) => {
+        if (!ch?.trim()) return;
+        const btn = document.createElement('button');
+        btn.className = 'local-ans-btn';
+        btn.innerHTML = `<span style="font-size:1.2rem;flex-shrink:0;">${ICONS[ci]}</span><span>${esc(ch)}</span>`;
+        btn.addEventListener('click', () => answer(ci, q, Date.now() - questionStartTime));
+        grid.appendChild(btn);
+      });
+
+      startTimer(q.timeLimit || 20);
+    }
+
+    let questionStartTime;
+
+    /* ── Timer ───────────────────────────────────────────────────────────── */
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      questionStartTime = Date.now();
+      const circle = document.getElementById('timerCircle');
+      const number = document.getElementById('timerNumber');
+      const C = 207.3;
+      let remaining = seconds;
+
+      const update = () => {
+        circle.style.strokeDashoffset = C * (1 - remaining / seconds);
+        number.textContent = remaining;
+        number.classList.toggle('urgent', remaining <= 5);
+        circle.style.stroke = remaining <= 5 ? 'var(--danger)' : 'var(--accent2)';
+      };
+      update();
+      timerInterval = setInterval(() => {
+        remaining--;
+        if (remaining < 0) { clearInterval(timerInterval); if (!answered) timeOut(); return; }
+        update();
+      }, 1000);
+    }
+
+    /* ── Answer ──────────────────────────────────────────────────────────── */
+    function answer(ci, q, elapsed) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timerInterval);
+
+      const isCorrect = ci === q.correctIndex;
+      const timeLimit = (q.timeLimit || 20) * 1000;
+      const pts = isCorrect ? Math.round(500 + 500 * Math.max(0, 1 - elapsed / timeLimit)) : 0;
+      score += pts;
+
+      document.getElementById('scoreLive').textContent = score.toLocaleString() + ' pts';
+
+      // Highlight buttons
+      document.querySelectorAll('.local-ans-btn').forEach((btn, i) => {
+        btn.disabled = true;
+        if      (i === q.correctIndex) btn.classList.add('correct');
+        else if (i === ci && !isCorrect) btn.classList.add('selected-wrong');
+        else btn.classList.add('incorrect');
+      });
+
+      // Feedback
+      const fb = document.getElementById('feedbackArea');
+      if (isCorrect) {
+        fb.innerHTML = `<div class="feedback-bar correct">✅ Bonne réponse ! <span style="margin-left:auto;">+${pts.toLocaleString()} pts</span></div>`;
+      } else {
+        const correct = q.choices[q.correctIndex];
+        fb.innerHTML = `<div class="feedback-bar incorrect">❌ Mauvaise réponse — La bonne réponse était : <strong>${esc(correct)}</strong></div>`;
+      }
+
+      history.push({ text: q.text, correct: q.choices[q.correctIndex], isCorrect, pts, yourAnswer: q.choices[ci] || null });
+      document.getElementById('nextWrap').classList.remove('hidden');
+      document.getElementById('nextBtn').textContent =
+        currentIndex < questions.length - 1 ? 'Question suivante →' : 'Voir mon score';
+    }
+
+    function timeOut() {
+      if (answered) return;
+      answered = true;
+      clearInterval(timerInterval);
+      const q = questions[currentIndex];
+
+      document.querySelectorAll('.local-ans-btn').forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.correctIndex) btn.classList.add('correct');
+        else btn.classList.add('incorrect');
+      });
+
+      const fb = document.getElementById('feedbackArea');
+      fb.innerHTML = `<div class="feedback-bar incorrect">⌛ Temps écoulé — La bonne réponse était : <strong>${esc(q.choices[q.correctIndex])}</strong></div>`;
+      history.push({ text: q.text, correct: q.choices[q.correctIndex], isCorrect: false, pts: 0, yourAnswer: null });
+
+      document.getElementById('nextWrap').classList.remove('hidden');
+      document.getElementById('nextBtn').textContent =
+        currentIndex < questions.length - 1 ? 'Question suivante →' : 'Voir mon score';
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        showQuestion();
+      } else {
+        showFinal();
+      }
+    });
+
+    /* ── Final ───────────────────────────────────────────────────────────── */
+    function showFinal() {
+      hide('quizScreen');
+      show('finalScreen');
+
+      const correct  = history.filter(h => h.isCorrect).length;
+      const total    = history.length;
+      const pct      = Math.round((correct / total) * 100);
+      const maxScore = total * 1000;
+
+      // Emoji based on performance
+      const emojis = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪';
+      document.getElementById('finalEmoji').textContent = emojis;
+      document.getElementById('finalScore').textContent = score.toLocaleString();
+      document.getElementById('quizTitleFinal').textContent = quiz.title;
+
+      // Stats
+      document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-val green">${correct}</div>
+          <div class="stat-lbl">Bonnes réponses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val red">${total - correct}</div>
+          <div class="stat-lbl">Mauvaises réponses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val purple">${pct}%</div>
+          <div class="stat-lbl">Score</div>
+        </div>
+      `;
+
+      // History
+      const list = document.getElementById('historyList');
+      list.innerHTML = '';
+      history.forEach(h => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `
+          <div class="history-icon">${h.isCorrect ? '✅' : '❌'}</div>
+          <div style="flex:1; min-width:0;">
+            <div class="history-q">${esc(h.text)}</div>
+            <div class="history-a">
+              ${h.isCorrect
+                ? `Réponse : <strong>${esc(h.correct)}</strong>`
+                : `Votre réponse : ${h.yourAnswer ? `<s>${esc(h.yourAnswer)}</s>` : 'Pas de réponse'} — Bonne réponse : <strong>${esc(h.correct)}</strong>`
+              }
+            </div>
+          </div>
+          ${h.pts ? `<div class="history-pts">+${h.pts.toLocaleString()} pts</div>` : ''}
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    document.getElementById('replayBtn').addEventListener('click', () => {
+      questions = quiz.questions.map(shuffleQuestion);
+      hide('finalScreen');
+      show('quizScreen');
+      startQuiz();
+    });
+
+    /* ── Helpers ─────────────────────────────────────────────────────────── */
+    function show(id) { const el = document.getElementById(id); el.classList.remove('hidden'); el.style.display = ''; }
+    function hide(id) { const el = document.getElementById(id); el.classList.add('hidden'); el.style.display = 'none'; }
+    function esc(s)   { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    loadQuiz();
+  </script>
+</body>
+</html>

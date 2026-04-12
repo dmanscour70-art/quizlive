@@ -340,5 +340,5 @@ function endGame(pin) {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`\n🎮 QuizLive running → http://localhost:${PORT}\n`);
+  console.log(`\n🎮 Mindeon School running → http://localhost:${PORT}\n`);
 });

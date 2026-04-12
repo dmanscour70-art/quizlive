@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuizLive</title>
+  <title>Mindeon School</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
@@ -94,7 +94,7 @@
 </head>
 <body>
   <nav class="navbar">
-    <div class="navbar-logo">QuizLive</div>
+    <div class="navbar-logo">Mindeon School</div>
     <a href="/create.html" class="btn btn-sm btn-success">✏️ Créer un quiz</a>
   </nav>
 
@@ -102,7 +102,7 @@
 
     <!-- Hero join card -->
     <div class="home-header">
-      <div class="logo">QuizLive</div>
+      <div class="logo">Mindeon School</div>
       <div class="logo-sub">Quiz interactifs en temps réel</div>
     </div>
 
@@ -237,10 +237,13 @@
             <div class="quiz-card-footer">
               ${catBadge(q.category)}
               <span class="quiz-q-badge">📝 ${q.questionCount} questions</span>
-              <button class="btn btn-primary btn-sm launch-btn" data-id="${q.id}">▶ Lancer</button>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:0.75rem;">
+              <a href="/local.html?quiz=${q.id}" class="btn btn-secondary btn-sm" style="flex:1;">🎮 Solo</a>
+              <button class="btn btn-primary btn-sm launch-btn" data-id="${q.id}" style="flex:1;">👥 Multijoueur</button>
             </div>
           `;
-          card.querySelector('button').addEventListener('click', function() {
+          card.querySelector('.launch-btn').addEventListener('click', function() {
             launchGame(q.id, this);
           });
           grid.appendChild(card);
@@ -267,7 +270,8 @@
           <div style="font-size:1.4rem;">📋</div>
           <div class="recent-item-title">${esc(title)}</div>
           <div class="recent-item-meta">${count} question${count > 1 ? 's' : ''}</div>
-          <button class="btn btn-sm btn-primary" data-id="${id}">▶ Lancer</button>
+          <a href="/local.html?quiz=${id}" class="btn btn-sm btn-secondary">🎮 Solo</a>
+          <button class="btn btn-sm btn-primary" data-id="${id}">👥 Multi</button>
           <button class="btn btn-sm btn-ghost" data-edit="${id}">✏️</button>
         `;
         item.querySelector('[data-id]').addEventListener('click', function(e) {
