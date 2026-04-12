@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hôte – QuizLive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
   <style>
     body { background: var(--bg); }
@@ -165,19 +167,26 @@
 
   <!-- Results -->
   <div class="hidden" id="resultsScreen">
-    <h2 style="text-align:center; margin-bottom:1.5rem;">Résultats</h2>
-    <div class="results-grid">
-      <div>
-        <div class="results-section-title">Répartition des réponses</div>
-        <div class="dist-chart" id="distChart"></div>
+    <div style="max-width:860px; margin:0 auto; padding:1.5rem;">
+      <!-- Question + answers recap -->
+      <div class="result-q-text" id="resultQText"></div>
+      <div class="result-answers-grid" id="resultAnswersGrid"></div>
+
+      <!-- Distribution + leaderboard -->
+      <div class="results-grid">
+        <div>
+          <div class="results-section-title">Répartition des réponses</div>
+          <div class="dist-chart" id="distChart"></div>
+        </div>
+        <div>
+          <div class="results-section-title">Top 5</div>
+          <div class="leaderboard" id="resultsLeaderboard"></div>
+        </div>
       </div>
-      <div>
-        <div class="results-section-title">Top 5</div>
-        <div class="leaderboard" id="resultsLeaderboard"></div>
+
+      <div style="text-align:center; margin-top:1.25rem;">
+        <button class="btn btn-primary btn-lg" id="nextBtn">➡ Question suivante</button>
       </div>
-    </div>
-    <div style="text-align:center; margin-top:1rem;">
-      <button class="btn btn-primary btn-lg" id="nextBtn">➡ Question suivante</button>
     </div>
   </div>
 

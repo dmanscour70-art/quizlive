@@ -145,25 +145,46 @@ socket.on('host:answer:count', ({ answered, total }) => {
   document.getElementById('answerCount').textContent = `${answered} / ${total} réponses`;
 });
 
-socket.on('question:results', ({ correctIndex, leaderboard, distribution, isLast }) => {
+socket.on('question:results', ({ correctIndex, questionText, choices, leaderboard, distribution, isLast }) => {
   stopTimer();
   hideAll();
   show('resultsScreen');
+
+  // Question text recap
+  document.getElementById('resultQText').textContent = questionText || currentQuestion?.text || '';
+
+  // Answer buttons with correct/incorrect highlight
+  const ansGrid = document.getElementById('resultAnswersGrid');
+  ansGrid.innerHTML = '';
+  (choices || currentQuestion?.choices || []).forEach((ch, ci) => {
+    if (!ch?.trim()) return;
+    const btn = document.createElement('div');
+    btn.className = `result-ans-btn ${ci === correctIndex ? 'correct' : 'incorrect'}`;
+    btn.dataset.index = ci;
+    btn.innerHTML = `
+      <span style="font-size:1.1rem;">${ICONS[ci]}</span>
+      <span>${escHtml(ch)}</span>
+      ${ci === correctIndex ? '<span class="result-check">✓</span>' : ''}
+    `;
+    ansGrid.appendChild(btn);
+  });
 
   // Distribution chart
   const chart = document.getElementById('distChart');
   chart.innerHTML = '';
   const maxVal = Math.max(...distribution, 1);
+  const displayChoices = choices || currentQuestion?.choices || [];
 
   distribution.forEach((count, ci) => {
-    if (!currentQuestion.choices[ci]?.trim()) return;
+    if (!displayChoices[ci]?.trim()) return;
     const wrap = document.createElement('div');
     wrap.className = 'dist-bar-wrap';
     const heightPct = Math.round((count / maxVal) * 100);
+    const isCorrect = ci === correctIndex;
     wrap.innerHTML = `
       <div class="dist-count">${count}</div>
-      <div class="dist-bar" data-index="${ci}" style="height:${heightPct}%; background:${ci === correctIndex ? 'var(--ans-' + ci + ')' : 'rgba(255,255,255,0.15)'};">
-      </div>
+      <div class="dist-bar ${isCorrect ? 'correct' : 'incorrect'}" data-index="${ci}"
+        style="height:${heightPct}%; background:var(--ans-${ci});"></div>
       <div class="dist-icon">${ICONS[ci]}</div>
     `;
     chart.appendChild(wrap);

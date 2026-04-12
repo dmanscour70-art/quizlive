@@ -173,7 +173,7 @@ io.on('connection', (socket) => {
     if (!player) return;
     if (player.answers[game.currentQuestion] !== undefined) return; // already answered
 
-    const q = game.quiz.questions[game.currentQuestion];
+    const q = game.currentShuffledQuestion || game.quiz.questions[game.currentQuestion];
     const elapsed = Date.now() - game.questionStartTime;
     const timeLimit = (q.timeLimit || 20) * 1000;
 
@@ -228,6 +228,20 @@ io.on('connection', (socket) => {
 
 // ─── Game Logic ───────────────────────────────────────────────────────────────
 
+// Fisher-Yates shuffle of answer choices, returns new question with updated correctIndex
+function shuffleQuestion(q) {
+  const order = q.choices.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return {
+    ...q,
+    choices: order.map(i => q.choices[i]),
+    correctIndex: order.indexOf(q.correctIndex)
+  };
+}
+
 function startNextQuestion(pin) {
   const game = games.get(pin);
   if (!game) return;
@@ -239,7 +253,9 @@ function startNextQuestion(pin) {
   }
 
   game.state = 'question';
-  const q = game.quiz.questions[game.currentQuestion];
+  const raw = game.quiz.questions[game.currentQuestion];
+  const q   = shuffleQuestion(raw);           // shuffled version
+  game.currentShuffledQuestion = q;           // store for validation + results
   const timeLimit = q.timeLimit || 20;
 
   // Host gets full question (with correctIndex)
@@ -279,7 +295,7 @@ function showQuestionResults(pin) {
   if (game.questionTimer) { clearTimeout(game.questionTimer); game.questionTimer = null; }
 
   game.state = 'results';
-  const q = game.quiz.questions[game.currentQuestion];
+  const q = game.currentShuffledQuestion || game.quiz.questions[game.currentQuestion];
 
   const leaderboard = [...game.players.values()]
     .sort((a, b) => b.score - a.score)
@@ -296,6 +312,8 @@ function showQuestionResults(pin) {
 
   io.to(`game:${pin}`).emit('question:results', {
     correctIndex: q.correctIndex,
+    questionText: q.text,
+    choices: q.choices,
     leaderboard,
     distribution,
     isLast

@@ -11,6 +11,7 @@ let myAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
 let myScore  = 0;
 let lastAnswerCorrect = null;
 let lastPoints = 0;
+let lastMyAnswerIndex = null;
 let timerInterval = null;
 let answered = false;
 let currentTimeLimit = 20;
@@ -152,6 +153,7 @@ function connectAndJoin() {
           b.style.transform = i === ci ? 'scale(1.05)' : 'scale(0.95)';
         });
 
+        lastMyAnswerIndex = ci;
         socket.emit('player:answer', { pin, answerIndex: ci });
 
         // Show waiting screen
@@ -198,26 +200,51 @@ function connectAndJoin() {
     }
   });
 
-  socket.on('question:results', ({ correctIndex, leaderboard, distribution, isLast }) => {
+  socket.on('question:results', ({ correctIndex, questionText, choices, leaderboard, distribution, isLast }) => {
     clearInterval(timerInterval);
     showScreen('revealScreen');
 
-    const myEntry = leaderboard.find(p => p.name === playerName);
-    const revealIcon = document.getElementById('revealIcon');
+    // Result header
+    const revealIcon  = document.getElementById('revealIcon');
     const revealTitle = document.getElementById('revealTitle');
-
     if (lastAnswerCorrect === true) {
-      revealIcon.textContent = '✅';
-      revealTitle.textContent = `+${lastPoints.toLocaleString()} points !`;
-      revealTitle.style.color = '#2ecc71';
+      revealIcon.textContent   = '✅';
+      revealTitle.textContent  = `+${lastPoints.toLocaleString()} points !`;
+      revealTitle.style.color  = 'var(--success)';
     } else if (lastAnswerCorrect === false) {
-      revealIcon.textContent = '❌';
-      revealTitle.textContent = 'Pas cette fois…';
-      revealTitle.style.color = 'var(--accent)';
+      revealIcon.textContent   = '❌';
+      revealTitle.textContent  = 'Pas cette fois…';
+      revealTitle.style.color  = 'var(--danger)';
     } else {
-      revealIcon.textContent = '⌛';
-      revealTitle.textContent = 'Temps écoulé';
-      revealTitle.style.color = 'var(--text-muted)';
+      revealIcon.textContent   = '⌛';
+      revealTitle.textContent  = 'Temps écoulé';
+      revealTitle.style.color  = 'var(--text-muted)';
+    }
+
+    // Question text
+    const qTextEl = document.getElementById('revealQText');
+    if (qTextEl) qTextEl.textContent = questionText || '';
+
+    // Answer recap — show all answers, highlight correct/player's choice
+    const ansGrid = document.getElementById('revealAnswersGrid');
+    if (ansGrid && choices) {
+      ansGrid.innerHTML = '';
+      const myLastIndex = lastMyAnswerIndex;
+      choices.forEach((ch, ci) => {
+        if (!ch?.trim()) return;
+        const isCorrect  = ci === correctIndex;
+        const isMine     = ci === myLastIndex;
+        const btn = document.createElement('div');
+        btn.className = `result-ans-btn ${isCorrect ? 'correct' : 'incorrect'}`;
+        btn.dataset.index = ci;
+        btn.innerHTML = `
+          <span style="font-size:1rem;">${ICONS[ci]}</span>
+          <span style="flex:1;">${escHtml(ch)}</span>
+          ${isCorrect ? '<span class="result-check">✓</span>' : ''}
+          ${isMine && !isCorrect ? '<span style="margin-left:auto;">← vous</span>' : ''}
+        `;
+        ansGrid.appendChild(btn);
+      });
     }
 
     // Mini leaderboard
@@ -230,13 +257,14 @@ function connectAndJoin() {
       const isMe = name === playerName;
       item.innerHTML = `
         <div class="lb-rank">${medals[rank - 1] || rank}</div>
-        <div class="lb-name" ${isMe ? 'style="color:var(--accent2);"' : ''}>${escHtml(name)}${isMe ? ' (vous)' : ''}</div>
+        <div class="lb-name" ${isMe ? 'style="font-weight:800; color:var(--accent);"' : ''}>${escHtml(name)}${isMe ? ' (vous)' : ''}</div>
         <div class="lb-score">${score.toLocaleString()} pts</div>
       `;
       lb.appendChild(item);
     });
 
     lastAnswerCorrect = null;
+    lastMyAnswerIndex = null;
   });
 
   socket.on('game:end', ({ leaderboard }) => {
