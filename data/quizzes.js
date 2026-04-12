@@ -6,6 +6,128 @@
 module.exports = [
 
   // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 0 – LLM & Automatisation – Débutant
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_llm_debutant',
+    title: '🟢 LLM & Automatisation – Débutant',
+    category: 'IA',
+    description: 'Vous débutez avec l\'IA ? Ce quiz couvre les notions de base des LLM et de l\'automatisation, sans jargon technique.',
+    questions: [
+      {
+        text: 'Qu\'est-ce qu\'un LLM comme ChatGPT ?',
+        choices: [
+          'Un programme capable de comprendre et générer du texte en langage naturel',
+          'Un moteur de recherche comme Google',
+          'Un logiciel de traitement de texte comme Word',
+          'Un antivirus intelligent'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'À quoi sert l\'automatisation dans une entreprise ?',
+        choices: [
+          'Remplacer tous les employés par des robots',
+          'Faire réaliser des tâches répétitives par un logiciel pour gagner du temps',
+          'Installer des machines dans les usines uniquement',
+          'Créer des présentations PowerPoint automatiquement'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Qu\'est-ce qu\'un "prompt" quand on utilise ChatGPT ?',
+        choices: [
+          'Le nom du serveur qui héberge l\'IA',
+          'La question ou l\'instruction que vous tapez pour obtenir une réponse',
+          'Le bouton pour démarrer l\'application',
+          'Le résumé que l\'IA génère à la fin'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Laquelle de ces tâches est la PLUS facile à automatiser ?',
+        choices: [
+          'Consoler un client mécontent au téléphone',
+          'Inventer un nouveau produit',
+          'Envoyer un email de bienvenue à chaque nouvel inscrit',
+          'Décider d\'une stratégie d\'entreprise'
+        ],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Un LLM peut-il se tromper dans ses réponses ?',
+        choices: [
+          'Non, il est toujours exact car il est entraîné sur Internet',
+          'Oui, il peut générer des informations incorrectes, c\'est ce qu\'on appelle "halluciner"',
+          'Non, les erreurs sont impossibles car il vérifie chaque réponse',
+          'Seulement s\'il est mal connecté à Internet'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel est le principal avantage d\'utiliser un LLM pour rédiger des emails ?',
+        choices: [
+          'L\'IA envoie les emails à votre place sans que vous les lisiez',
+          'Il génère un brouillon rapidement que vous pouvez ensuite personnaliser',
+          'Les emails générés par IA sont obligatoirement plus courts',
+          'Cela évite d\'avoir une adresse email'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Qu\'est-ce que ChatGPT, Claude et Gemini ont en commun ?',
+        choices: [
+          'Ce sont des moteurs de recherche',
+          'Ce sont des réseaux sociaux',
+          'Ce sont des assistants IA basés sur des LLM',
+          'Ce sont des logiciels de comptabilité'
+        ],
+        correctIndex: 2,
+        timeLimit: 15
+      },
+      {
+        text: 'Quelle phrase décrit le mieux ce qu\'un LLM "apprend" ?',
+        choices: [
+          'Il mémorise toutes les pages web en temps réel',
+          'Il apprend à prédire le mot suivant en lisant des milliards de textes',
+          'Il est programmé manuellement pour chaque question possible',
+          'Il copie les réponses d\'encyclopédies en ligne'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Vous avez une tâche manuelle qui prend 1h par jour. Si vous l\'automatisez, que se passe-t-il ?',
+        choices: [
+          'La tâche disparaît définitivement de l\'entreprise',
+          'Vous récupérez du temps pour des tâches à plus forte valeur ajoutée',
+          'Cela coûte toujours plus cher que de le faire à la main',
+          'Rien ne change, c\'est juste plus rapide'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Que veut dire "donner du contexte" à un LLM dans votre prompt ?',
+        choices: [
+          'Lui envoyer des fichiers ZIP',
+          'Lui préciser qui vous êtes, quel est votre objectif et les contraintes à respecter',
+          'Augmenter la vitesse de connexion Internet',
+          'Choisir la langue d\'affichage de l\'interface'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
   // QUIZ 1 – LLM & Automatisation
   // ─────────────────────────────────────────────────────────────────────────
   {
