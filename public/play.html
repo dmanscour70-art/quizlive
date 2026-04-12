@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Jouer – QuizLive</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: var(--bg); overflow: hidden; }
+    .full-page {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    /* ── Join form ────────────────────────────────────────────────────────── */
+    #joinScreen .join-card {
+      max-width: 400px;
+      width: 100%;
+    }
+
+    /* ── Lobby ───────────────────────────────────────────────────────────── */
+    #lobbyScreen .avatar {
+      font-size: 5rem;
+      margin-bottom: 0.5rem;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+    .player-name-big { font-size: 2rem; font-weight: 900; margin: 0.5rem 0; }
+
+    /* ── Question screen ──────────────────────────────────────────────────── */
+    #questionScreen {
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .q-banner {
+      background: var(--surface);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    .q-banner-text {
+      flex: 1;
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
+      font-weight: 700;
+      text-align: left;
+      line-height: 1.35;
+    }
+    .answers-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 1rem;
+      overflow: hidden;
+    }
+    .player-answer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .player-ans-btn {
+      border: none;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1rem;
+      font-size: clamp(0.9rem, 3vw, 1.15rem);
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.1s, filter 0.1s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 80px;
+      word-break: break-word;
+      text-align: center;
+    }
+    .player-ans-btn:nth-child(1) { background: var(--ans-0); }
+    .player-ans-btn:nth-child(2) { background: var(--ans-1); }
+    .player-ans-btn:nth-child(3) { background: var(--ans-2); color: #222; }
+    .player-ans-btn:nth-child(4) { background: var(--ans-3); }
+    .player-ans-btn:active { transform: scale(0.93); }
+    .player-ans-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+    .player-ans-btn .icon { font-size: 1.5rem; }
+
+    /* ── Waiting after answer ─────────────────────────────────────────────── */
+    #waitingScreen {
+      gap: 1rem;
+    }
+    .points-badge {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 0.75rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    /* ── Results reveal ──────────────────────────────────────────────────── */
+    #revealScreen { gap: 1rem; }
+    .rank-change {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Final screen ────────────────────────────────────────────────────── */
+    #finalScreen { gap: 1rem; }
+    .my-rank-big {
+      font-size: 5rem;
+      font-weight: 900;
+      color: var(--accent2);
+      animation: bounceIn 0.5s ease;
+    }
+
+    @media (max-width: 380px) {
+      .player-answer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Join form (if no PIN/name in URL) -->
+  <div class="full-page" id="joinScreen" style="display:none;">
+    <div class="join-card">
+      <div class="logo" style="font-size:2.5rem; margin-bottom:0.25rem;">QuizLive</div>
+      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Rejoindre une partie</p>
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <input class="input" id="pinField" type="text" placeholder="Code PIN"
+          maxlength="6" inputmode="numeric" style="font-size:1.4rem; text-align:center; letter-spacing:5px; font-weight:700;">
+        <input class="input" id="nameField" type="text" placeholder="Votre pseudo" maxlength="20">
+        <button class="btn btn-primary btn-lg btn-block" id="joinFormBtn">▶ Rejoindre</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connecting -->
+  <div class="full-page" id="connectingScreen">
+    <div class="logo" style="font-size:2rem;">QuizLive</div>
+    <p style="color:var(--text-muted); margin-top:1rem;">Connexion<span class="waiting-dots"></span></p>
+  </div>
+
+  <!-- Lobby (waiting for host to start) -->
+  <div class="full-page hidden" id="lobbyScreen">
+    <div class="avatar" id="playerAvatar">🐯</div>
+    <div class="player-name-big" id="playerNameDisplay">Joueur</div>
+    <div class="badge badge-success" style="margin-bottom:1.5rem;">✓ Connecté</div>
+    <p style="color:var(--text-muted); font-size:1.1rem; margin-bottom:0.5rem;">En attente du lancement</p>
+    <p style="color:var(--text-muted); font-size:0.85rem; opacity:0.6;" id="playerCountDisplay"></p>
+  </div>
+
+  <!-- Starting countdown -->
+  <div class="full-page hidden" id="startingScreen">
+    <p style="font-size:1.1rem; color:var(--text-muted); margin-bottom:0.5rem;">C'est parti !</p>
+    <div class="countdown-big" id="playerCountdown">3</div>
+  </div>
+
+  <!-- Question + answers -->
+  <div class="hidden" id="questionScreen">
+    <div class="q-banner">
+      <div class="timer-ring">
+        <svg viewBox="0 0 80 80">
+          <circle class="timer-track" cx="40" cy="40" r="33"/>
+          <circle class="timer-fill" id="pTimerCircle" cx="40" cy="40" r="33"
+            stroke-dasharray="207.3" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-number" id="pTimerNumber">20</div>
+      </div>
+      <div class="q-banner-text" id="pQText">...</div>
+      <div style="font-size:0.8rem; color:var(--text-muted); text-align:center; flex-shrink:0;">
+        <div id="pQIndex" style="font-weight:700;"></div>
+      </div>
+    </div>
+    <div class="answers-area">
+      <div class="player-answer-grid" id="playerAnswerGrid"></div>
+    </div>
+  </div>
+
+  <!-- Waiting after answering (before results) -->
+  <div class="full-page hidden" id="waitingScreen">
+    <div id="answerResult"></div>
+    <div class="points-badge" id="pointsBadge" style="display:none;"></div>
+    <p style="color:var(--text-muted); margin-top:0.5rem;">En attente des autres joueurs<span class="waiting-dots"></span></p>
+  </div>
+
+  <!-- Results reveal (after question) -->
+  <div class="full-page hidden" id="revealScreen">
+    <div id="revealIcon" style="font-size:4rem;"></div>
+    <h2 id="revealTitle"></h2>
+    <div class="leaderboard" id="revealLeaderboard" style="max-width:400px; width:100%;"></div>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Résultats en cours d'affichage sur l'écran principal</p>
+  </div>
+
+  <!-- Final -->
+  <div class="full-page hidden" id="finalScreen">
+    <div id="finalMedal" style="font-size:4rem;"></div>
+    <div class="my-rank-big" id="myRankDisplay"></div>
+    <p style="font-size:1.2rem; font-weight:700;" id="myNameFinal"></p>
+    <div class="points-badge" id="myScoreFinal" style="margin-top:0.5rem;"></div>
+    <div class="leaderboard" id="finalLb" style="max-width:400px; width:100%; margin-top:1.5rem;"></div>
+    <a href="/" class="btn btn-primary" style="margin-top:1.5rem;">🏠 Accueil</a>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/play.js"></script>
+</body>
+</html>

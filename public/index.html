@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizLive</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { overflow-y: auto; }
+    .home-layout { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+    /* Header */
+    .home-header { text-align: center; margin-bottom: 3rem; }
+
+    /* Join card */
+    .join-card { max-width: 440px; margin: 0 auto; }
+    .or-divider { display: flex; align-items: center; gap: 1rem; color: var(--text-muted); font-size: 0.9rem; margin: 1.25rem 0; }
+    .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+    /* Section titles */
+    .section-title {
+      font-size: 1.4rem; font-weight: 800;
+      margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-count {
+      background: var(--accent); color: #fff;
+      border-radius: 999px; padding: 0.1rem 0.6rem;
+      font-size: 0.8rem; font-weight: 700;
+    }
+
+    /* Preset quizzes grid */
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .quiz-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+      display: flex; flex-direction: column; gap: 0.75rem;
+      transition: border-color 0.2s, transform 0.15s;
+      cursor: default;
+    }
+    .quiz-card:hover { border-color: rgba(255,255,255,0.18); transform: translateY(-2px); }
+    .quiz-card-header { display: flex; align-items: flex-start; gap: 0.75rem; }
+    .quiz-card-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; }
+    .quiz-card-title { font-size: 1.05rem; font-weight: 800; line-height: 1.3; }
+    .quiz-card-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; flex: 1; }
+    .quiz-card-footer { display: flex; align-items: center; gap: 0.6rem; margin-top: auto; }
+    .quiz-q-badge {
+      background: rgba(255,255,255,0.07); border-radius: 999px;
+      padding: 0.2rem 0.7rem; font-size: 0.78rem; color: var(--text-muted); font-weight: 600;
+    }
+    .cat-badge {
+      border-radius: 999px; padding: 0.2rem 0.7rem;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .cat-ia       { background: rgba(155,89,182,0.25); color: #c39bd3; }
+    .cat-microsoft{ background: rgba(0,120,212,0.25);  color: #74b9ff; }
+    .cat-auto     { background: rgba(46,204,113,0.25); color: #82e0aa; }
+    .launch-btn { margin-left: auto; }
+
+    /* Recent quizzes */
+    .recent-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2.5rem; }
+    .recent-item {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 0.875rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      border: 1px solid transparent;
+      transition: background 0.2s;
+    }
+    .recent-item:hover { background: var(--card); border-color: rgba(255,255,255,0.1); }
+    .recent-item-title { flex: 1; font-weight: 600; }
+    .recent-item-meta  { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+
+    /* Features strip */
+    .features { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .feat { background: var(--surface); border-radius: var(--radius-lg); padding: 1.25rem; text-align: center; }
+    .feat-icon  { font-size: 2rem; margin-bottom: 0.5rem; }
+    .feat-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .feat-desc  { font-size: 0.8rem; color: var(--text-muted); }
+
+    @media (max-width: 640px) {
+      .quiz-grid { grid-template-columns: 1fr; }
+      .features  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-logo">QuizLive</div>
+    <a href="/create.html" class="btn btn-sm btn-success">✏️ Créer un quiz</a>
+  </nav>
+
+  <div class="home-layout">
+
+    <!-- Hero join card -->
+    <div class="home-header">
+      <div class="logo">QuizLive</div>
+      <div class="logo-sub">Quiz interactifs en temps réel</div>
+    </div>
+
+    <div class="join-card" style="margin-bottom: 3.5rem;">
+      <div class="card">
+        <h2 style="text-align:center; margin-bottom:0.4rem;">Rejoindre une partie</h2>
+        <p style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:1.25rem;">Entrez le code PIN donné par l'hôte</p>
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          <input class="input" id="pinInput" type="text" placeholder="Code PIN (ex: 123456)"
+            maxlength="6" inputmode="numeric" autocomplete="off"
+            style="font-size:1.5rem; text-align:center; letter-spacing:6px; font-weight:700;">
+          <input class="input" id="nameInput" type="text" placeholder="Votre pseudo" maxlength="20" autocomplete="off">
+          <button class="btn btn-primary btn-lg btn-block" id="joinBtn">▶ Rejoindre</button>
+        </div>
+        <div class="or-divider">ou</div>
+        <a href="/create.html" class="btn btn-success btn-block">✏️ Créer votre propre quiz</a>
+      </div>
+    </div>
+
+    <!-- Preset quizzes -->
+    <div class="section-title">
+      🎓 Quiz prêts à jouer
+      <span class="section-count" id="presetCount">5</span>
+    </div>
+    <div class="quiz-grid" id="presetGrid">
+      <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:1.5rem;">Chargement…</div>
+    </div>
+
+    <!-- Recent (user-created) quizzes -->
+    <div id="recentSection" style="display:none;">
+      <div class="section-title">📋 Vos quiz récents</div>
+      <div class="recent-list" id="recentList"></div>
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+      <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">Temps réel</div><div class="feat-desc">Synchronisation instantanée via Socket.io</div></div>
+      <div class="feat"><div class="feat-icon">🏆</div><div class="feat-title">Classement live</div><div class="feat-desc">Scores mis à jour après chaque question</div></div>
+      <div class="feat"><div class="feat-icon">📱</div><div class="feat-title">Multi-device</div><div class="feat-desc">Mobile, tablette ou ordinateur</div></div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    /* ── Toast ─────────────────────────────────────────────────────────── */
+    function toast(msg, type = 'error') {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    /* ── Join ──────────────────────────────────────────────────────────── */
+    document.getElementById('joinBtn').addEventListener('click', () => {
+      const pin  = document.getElementById('pinInput').value.trim();
+      const name = document.getElementById('nameInput').value.trim();
+      if (!pin)  return toast('Entrez un code PIN');
+      if (!name) return toast('Entrez votre pseudo');
+      window.location.href = `/play.html?pin=${pin}&name=${encodeURIComponent(name)}`;
+    });
+    ['pinInput', 'nameInput'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('joinBtn').click();
+      });
+    });
+    document.getElementById('pinInput').addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    });
+
+    /* ── Launch a game from a quiz ID ──────────────────────────────────── */
+    async function launchGame(quizId, btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳';
+      try {
+        const res  = await fetch('/api/game', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quizId })
+        });
+        const data = await res.json();
+        if (data.pin) {
+          window.location.href = `/host.html?pin=${data.pin}`;
+        } else {
+          toast(data.error || 'Erreur');
+          btn.disabled = false;
+          btn.textContent = '▶ Lancer';
+        }
+      } catch {
+        toast('Impossible de créer la partie');
+        btn.disabled = false;
+        btn.textContent = '▶ Lancer';
+      }
+    }
+
+    /* ── Category badge ────────────────────────────────────────────────── */
+    function catBadge(cat) {
+      if (!cat) return '';
+      const cls = cat === 'IA' ? 'cat-ia' : cat === 'Microsoft' ? 'cat-microsoft' : 'cat-auto';
+      return `<span class="cat-badge ${cls}">${cat}</span>`;
+    }
+
+    /* ── Preset quizzes ────────────────────────────────────────────────── */
+    async function loadPresets() {
+      try {
+        const res  = await fetch('/api/quizzes');
+        const all  = await res.json();
+        const presets = all.filter(q => q.preset);
+
+        document.getElementById('presetCount').textContent = presets.length;
+
+        const grid = document.getElementById('presetGrid');
+        grid.innerHTML = '';
+
+        if (!presets.length) {
+          grid.innerHTML = '<p style="color:var(--text-muted);">Aucun quiz disponible.</p>';
+          return;
+        }
+
+        presets.forEach(q => {
+          const firstEmoji = (q.title.match(/^\S+/) || ['📋'])[0];
+          const card = document.createElement('div');
+          card.className = 'quiz-card';
+          card.innerHTML = `
+            <div class="quiz-card-header">
+              <div class="quiz-card-icon">${firstEmoji}</div>
+              <div class="quiz-card-title">${esc(q.title.replace(/^\S+\s*/, ''))}</div>
+            </div>
+            ${q.description ? `<div class="quiz-card-desc">${esc(q.description)}</div>` : ''}
+            <div class="quiz-card-footer">
+              ${catBadge(q.category)}
+              <span class="quiz-q-badge">📝 ${q.questionCount} questions</span>
+              <button class="btn btn-primary btn-sm launch-btn" data-id="${q.id}">▶ Lancer</button>
+            </div>
+          `;
+          card.querySelector('button').addEventListener('click', function() {
+            launchGame(q.id, this);
+          });
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        document.getElementById('presetGrid').innerHTML =
+          '<p style="color:var(--text-muted);">Impossible de charger les quiz.</p>';
+      }
+    }
+
+    /* ── Recent (user) quizzes from localStorage ───────────────────────── */
+    function loadRecent() {
+      const stored = JSON.parse(localStorage.getItem('quizlive_quizzes') || '[]');
+      if (!stored.length) return;
+
+      const section = document.getElementById('recentSection');
+      const list    = document.getElementById('recentList');
+      section.style.display = 'block';
+
+      stored.slice().reverse().slice(0, 5).forEach(({ id, title, count }) => {
+        const item = document.createElement('div');
+        item.className = 'recent-item';
+        item.innerHTML = `
+          <div style="font-size:1.4rem;">📋</div>
+          <div class="recent-item-title">${esc(title)}</div>
+          <div class="recent-item-meta">${count} question${count > 1 ? 's' : ''}</div>
+          <button class="btn btn-sm btn-primary" data-id="${id}">▶ Lancer</button>
+          <button class="btn btn-sm btn-ghost" data-edit="${id}">✏️</button>
+        `;
+        item.querySelector('[data-id]').addEventListener('click', function(e) {
+          e.stopPropagation();
+          launchGame(id, this);
+        });
+        item.querySelector('[data-edit]').addEventListener('click', e => {
+          e.stopPropagation();
+          window.location.href = `/create.html?edit=${id}`;
+        });
+        list.appendChild(item);
+      });
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    loadPresets();
+    loadRecent();
+  </script>
+</body>
+</html>
