@@ -145,10 +145,6 @@ socket.on('question:start', ({ question, index, total, timeLimit }) => {
       btn.className = 'host-ans-btn';
       btn.dataset.index = ci;
       btn.innerHTML = `<span style="font-size:1.3rem;">${ICONS[ci]}</span> ${ch}`;
-      if (ci === question.correctIndex) {
-        btn.classList.add('correct');
-        btn.innerHTML += `<span class="ans-correct-badge">✓ Bonne réponse</span>`;
-      }
       container.appendChild(btn);
     });
   }
