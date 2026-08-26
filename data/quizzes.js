@@ -776,4 +776,358 @@ module.exports = [
     ]
   }
 
+,
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 10 – Formation Claude Tous Publics (slides 1→36) – Facile
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_claude_public_facile',
+    title: '🟢 Formation Claude — Les bases (Facile)',
+    category: 'Claude',
+    description: 'Les notions essentielles vues dans la première moitié de la formation Claude tous publics : LLM, tokens, contexte, prompt, offres et outils.',
+    questions: [
+      {
+        text: 'Qu\'est-ce qu\'un modèle de langage (LLM) ?',
+        choices: [
+          'Une IA entraînée à générer du texte à partir d\'immenses corpus de documents',
+          'Un moteur de recherche qui interroge une base de données',
+          'Un traducteur automatique spécialisé',
+          'Un logiciel de gestion documentaire'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'Quelle analogie est utilisée dans la formation pour décrire un LLM ?',
+        choices: [
+          'Une encyclopédie toujours à jour',
+          'Un collaborateur très cultivé et rapide… mais qui n\'a pas tout vérifié',
+          'Une calculatrice infaillible',
+          'Un stagiaire qui ne sait rien faire seul'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Qu\'est-ce qu\'un "token" ?',
+        choices: [
+          'Un mot de passe d\'accès à l\'API',
+          'La plus petite brique de texte que le modèle lit et écrit',
+          'Une unité de temps de calcul',
+          'Un fichier joint à la conversation'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'En moyenne, un mot vaut environ combien de tokens ?',
+        choices: ['0,5 token', '1,3 token', '3 tokens', '10 tokens'],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'À quoi correspond la "fenêtre de contexte" ?',
+        choices: [
+          'La zone d\'écriture de l\'interface',
+          'La mémoire de travail du modèle : tout ce qu\'il peut prendre en compte en une seule fois',
+          'Le nombre de conversations enregistrées dans l\'historique',
+          'La durée pendant laquelle une conversation reste accessible'
+        ],
+        correctIndex: 1,
+        timeLimit: 25
+      },
+      {
+        text: 'Quels sont les quatre ingrédients d\'un bon prompt ?',
+        choices: [
+          'Rôle, contexte, tâche, format',
+          'Question, exemple, longueur, ton',
+          'Sujet, verbe, complément, ponctuation',
+          'Modèle, température, tokens, langue'
+        ],
+        correctIndex: 0,
+        timeLimit: 25
+      },
+      {
+        text: 'Qu\'appelle-t-on une "hallucination" ?',
+        choices: [
+          'Un bug d\'affichage de l\'interface',
+          'Une réponse fausse mais formulée avec assurance, quand le modèle comble ce qu\'il ignore',
+          'Un refus du modèle de répondre',
+          'Une réponse trop longue'
+        ],
+        correctIndex: 1,
+        timeLimit: 25
+      },
+      {
+        text: 'Que signifie "ancrage" (RAG) ?',
+        choices: [
+          'Ré-entraîner le modèle sur vos données internes',
+          'Donner au modèle accès à vos données au moment de répondre',
+          'Bloquer le modèle sur un seul sujet',
+          'Sauvegarder les conversations sur vos serveurs'
+        ],
+        correctIndex: 1,
+        timeLimit: 25
+      },
+      {
+        text: 'Combien de sièges minimum faut-il pour souscrire Claude Team ?',
+        choices: ['1 siège', '3 sièges', '5 sièges', '10 sièges'],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Combien coûte l\'offre Claude Pro ?',
+        choices: ['Gratuit', '20 $ / mois', '25 $ / mois', '100 $ / mois'],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel outil Claude est un "agent de bureau" qui exécute des tâches multi-étapes sur vos fichiers, sans code ?',
+        choices: ['Claude Code', 'Claude Cowork', 'Claude Design', 'Projects'],
+        correctIndex: 1,
+        timeLimit: 25
+      },
+      {
+        text: 'Que sont les "Routines" dans l\'écosystème Claude ?',
+        choices: [
+          'Des raccourcis clavier de l\'interface',
+          'Des tâches planifiées dans le cloud qui tournent même ordinateur fermé',
+          'Des modèles de prompts enregistrés',
+          'Des règles de sécurité définies par l\'IT'
+        ],
+        correctIndex: 1,
+        timeLimit: 25
+      },
+      {
+        text: 'Qu\'est-ce qu\'un "Project" dans Claude ?',
+        choices: [
+          'Un espace réutilisable avec vos instructions et une base de connaissances',
+          'Une conversation partagée avec toute l\'équipe',
+          'Un plan de déploiement validé par l\'IT',
+          'Un agent qui agit seul sur vos outils'
+        ],
+        correctIndex: 0,
+        timeLimit: 25
+      },
+      {
+        text: 'Combien de modules composent le parcours de cette formation ?',
+        choices: ['4 modules', '6 modules', '8 modules', '12 modules'],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Que peut-on faire en déposant un PDF, un Excel ou un slide dans Claude ?',
+        choices: [
+          'Rien, Claude ne lit que le texte tapé',
+          'Claude les lit et les exploite : synthèse, extraction de tableau, comparaison',
+          'Seuls les fichiers texte (.txt) sont acceptés',
+          'Il faut d\'abord les convertir en images'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 11 – Formation Claude Tous Publics (slides 1→36) – Difficile / pièges
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_claude_public_difficile',
+    title: '🔴 Formation Claude — Questions pièges (Difficile)',
+    category: 'Claude',
+    description: 'Attention aux détails ! Nuances, exceptions et faux amis tirés de la première moitié de la formation Claude tous publics.',
+    questions: [
+      {
+        text: '🪤 Vous posez une question factuelle à Claude, sans activer la recherche web. Que fait-il exactement ?',
+        choices: [
+          'Il interroge une base de connaissances interne mise à jour en continu',
+          'Il raisonne et rédige à partir de son entraînement — il ne "cherche" nulle part',
+          'Il consulte Google en arrière-plan de toute façon',
+          'Il refuse de répondre tant que la source n\'est pas fournie'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Un ticket entrant est trié et résumé par une IA, puis routé selon des règles fixes. De quoi s\'agit-il ?',
+        choices: [
+          'Un agent, puisqu\'il y a de l\'IA',
+          'Un workflow IA : parcours fixe dont une étape appelle l\'IA',
+          'Un workflow classique, puisque le routage est déterministe',
+          'Un système multi-agents'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Un "Projet" (ou GPT personnalisé) configuré avec vos documents : est-ce un agent ?',
+        choices: [
+          'Oui, dès qu\'il a accès à des documents c\'est un agent',
+          'Non : il répond et se configure, mais n\'agit pas seul — le mot "agent" désigne la 3ᵉ colonne',
+          'Oui, car il garde une mémoire entre les sessions',
+          'Non, car un agent doit obligatoirement être codé en Python'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 D\'après le comparatif des LLM, quel modèle affiche la plus grande fenêtre de contexte ?',
+        choices: [
+          'Claude (1M)',
+          'Gemini (1 à 2M)',
+          'ChatGPT',
+          'Mistral'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Toujours d\'après le comparatif, laquelle est une LIMITE attribuée à Claude ?',
+        choices: [
+          'Des hallucinations sur les tâches précises',
+          'Un respect des consignes moins strict',
+          'La bureautique via connecteurs (moins natif) et un écosystème d\'apps tierces plus restreint',
+          'Un retrait sur le raisonnement complexe'
+        ],
+        correctIndex: 2,
+        timeLimit: 35
+      },
+      {
+        text: '🪤 Quelle limite le comparatif attribue-t-il à Mistral ?',
+        choices: [
+          'Un hébergement hors Europe',
+          'Un mauvais niveau en français',
+          'Un retrait sur le raisonnement complexe, écosystème et interface moins riches',
+          'Un coût d\'API très élevé'
+        ],
+        correctIndex: 2,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Claude Code est-il inclus dans l\'offre Team ?',
+        choices: [
+          'Oui, dans toutes les formules Team',
+          'Uniquement dans la formule Team Premium',
+          'Non, Claude Code est réservé à Enterprise',
+          'Non, il n\'est disponible qu\'en Max'
+        ],
+        correctIndex: 1,
+        timeLimit: 35
+      },
+      {
+        text: '🪤 Sur les offres particuliers (Free, Pro, Max), que se passe-t-il pour vos données ?',
+        choices: [
+          'Elles ne sont jamais utilisées, comme en Team',
+          'Elles sont utilisées par défaut — c\'est le "sans entraînement par défaut" qui distingue les offres entreprise',
+          'Elles sont supprimées automatiquement au bout de 30 jours',
+          'Elles sont hébergées en Europe par défaut'
+        ],
+        correctIndex: 1,
+        timeLimit: 35
+      },
+      {
+        text: '🪤 L\'offre Max à 200 $/mois correspond à combien de fois l\'usage Pro ?',
+        choices: ['2×', '5×', '10×', '20×'],
+        correctIndex: 3,
+        timeLimit: 25
+      },
+      {
+        text: '🪤 Quelle fonctionnalité d\'administration N\'EST PAS disponible en Team ?',
+        choices: [
+          'Le SSO',
+          'La console admin',
+          'Le provisioning SCIM (réservé à Enterprise)',
+          'Les connecteurs Microsoft 365'
+        ],
+        correctIndex: 2,
+        timeLimit: 35
+      },
+      {
+        text: '🪤 Le connecteur Microsoft 365 fonctionne-t-il avec un compte Microsoft personnel ?',
+        choices: [
+          'Oui, tout compte Microsoft convient',
+          'Non : comptes Microsoft professionnels uniquement',
+          'Oui, mais uniquement pour le calendrier',
+          'Oui, après validation par l\'utilisateur'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Quelles permissions Graph le connecteur M365 demande-t-il côté Outlook/SharePoint ?',
+        choices: [
+          'Lecture seule : Mail.Read, Calendars.Read, Sites.Read.All, Files.Read.All…',
+          'Lecture et écriture complètes sur la boîte mail',
+          'Un accès administrateur global permanent',
+          'Aucune : le connecteur passe par une API maison'
+        ],
+        correctIndex: 0,
+        timeLimit: 35
+      },
+      {
+        text: '🪤 Quelle URL de redirection exacte faut-il déclarer dans l\'app cliente Entra ?',
+        choices: [
+          'claude.ai/auth/callback',
+          'claude.ai/api/mcp/auth_callback',
+          'anthropic.com/mcp/callback',
+          'claude.ai/api/oauth/redirect'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Quelle limite est signalée pour les Managed Agents d\'Anthropic ?',
+        choices: [
+          'Pas de sous-agents possibles',
+          'Pas de conformité ZDR / HIPAA',
+          'Pas d\'audit des sessions',
+          'Pas d\'isolation entre les exécutions'
+        ],
+        correctIndex: 1,
+        timeLimit: 35
+      },
+      {
+        text: '🪤 Quand une conversation dépasse la fenêtre de contexte, qu\'est-ce qui disparaît en premier ?',
+        choices: [
+          'Les messages les plus récents',
+          'Le début de la conversation, le plus ancien',
+          'Les fichiers joints uniquement',
+          'Rien : le modèle compresse tout automatiquement'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Le mot « anticonstitutionnellement » représente combien de tokens ?',
+        choices: [
+          'Un seul, car c\'est un seul mot',
+          'Plusieurs : un mot long est découpé en plusieurs tokens',
+          'Exactement 1,3 token',
+          'Autant que de lettres'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Jusqu\'à quelle marche de "l\'échelle des agents" cette formation monte-t-elle ?',
+        choices: [
+          'Marche 3 — Délégation (Cowork, Skills)',
+          'Marche 4 — Exécution déclenchée (Routines, agents)',
+          'Marche 5 — SDK et sur-mesure',
+          'Marche 2 — Espace persistant (Projects)'
+        ],
+        correctIndex: 1,
+        timeLimit: 30
+      },
+      {
+        text: '🪤 Parmi ces solutions "accessibles", laquelle est décrite comme n\'étant PAS un moteur de workflow ?',
+        choices: ['Claude', 'Dust', 'Copilot Studio', 'n8n'],
+        correctIndex: 1,
+        timeLimit: 35
+      }
+    ]
+  }
+
 ];

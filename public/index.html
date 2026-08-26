@@ -136,6 +136,7 @@
     .cat-ia        { background: rgba(155,89,182,0.15); color: #7c3aed; }
     .cat-microsoft { background: rgba(0,120,212,0.12);  color: #1d6fb8; }
     .cat-auto      { background: rgba(46,204,113,0.15); color: #166534; }
+    .cat-claude    { background: rgba(217,119,87,0.15);  color: #b4541f; }
     .quiz-card-actions { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
 
     /* ── Recent quizzes ─────────────────────────────────────────────────── */
@@ -461,7 +462,7 @@
     /* ── Category badge ──────────────────────────────────────────────────── */
     function catBadge(cat) {
       if (!cat) return '';
-      const cls = cat === 'IA' ? 'cat-ia' : cat === 'Microsoft' ? 'cat-microsoft' : 'cat-auto';
+      const cls = cat === 'IA' ? 'cat-ia' : cat === 'Microsoft' ? 'cat-microsoft' : cat === 'Claude' ? 'cat-claude' : 'cat-auto';
       return `<span class="cat-badge ${cls}">${esc(cat)}</span>`;
     }
 
