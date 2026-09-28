@@ -1130,4 +1130,252 @@ module.exports = [
     ]
   }
 
+,
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 12 – Généraux IA : culture générale (accessible à tous)
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_general_ia_culture',
+    title: '🧠 Généraux IA — Culture générale',
+    category: 'IA',
+    description: 'Les outils et notions IA que tout le monde croise au quotidien : questions accessibles, sans prérequis.',
+    questions: [
+      {
+        text: 'Quelle entreprise a créé ChatGPT ?',
+        choices: [
+          'Google',
+          'OpenAI',
+          'Meta',
+          'Apple'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Quelle entreprise a créé Claude ?',
+        choices: [
+          'Anthropic',
+          'Microsoft',
+          'OpenAI',
+          'Amazon'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'Comment s\'appelle l\'assistant IA de Google ?',
+        choices: [
+          'Siri',
+          'Alexa',
+          'Gemini',
+          'Copilot'
+        ],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel est le nom de l\'assistant IA intégré à Windows, Word, Excel et Teams ?',
+        choices: [
+          'Cortana',
+          'Copilot',
+          'Clippy',
+          'Bing'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'De quel pays vient Mistral AI ?',
+        choices: [
+          'États-Unis',
+          'Allemagne',
+          'Chine',
+          'France'
+        ],
+        correctIndex: 3,
+        timeLimit: 20
+      },
+      {
+        text: 'Que fait une « IA générative » ?',
+        choices: [
+          'Elle crée du contenu : textes, images, musique, vidéos…',
+          'Elle répare les ordinateurs',
+          'Elle génère de l\'électricité',
+          'Elle remplace Internet'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'Qu\'est-ce qu\'un « prompt » ?',
+        choices: [
+          'Un virus informatique',
+          'La consigne ou la question que l\'on écrit à l\'IA',
+          'Un abonnement payant',
+          'Un type de robot'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Une IA comme ChatGPT ou Claude peut-elle se tromper ?',
+        choices: [
+          'Non, jamais',
+          'Seulement en anglais',
+          'Oui, elle peut même inventer une réponse avec beaucoup d\'assurance',
+          'Seulement le week-end'
+        ],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Qu\'est-ce qu\'un « deepfake » ?',
+        choices: [
+          'Une fausse vidéo ou une fausse voix très réaliste créée par l\'IA',
+          'Un réseau social chinois',
+          'Un jeu vidéo en réalité virtuelle',
+          'Un antivirus'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'Peut-on coller sans risque des documents confidentiels dans une IA grand public gratuite ?',
+        choices: [
+          'Oui, tout est automatiquement effacé',
+          'Non, mieux vaut éviter : ces données peuvent être conservées',
+          'Oui, si on dit « s\'il te plaît »',
+          'Oui, l\'IA ne lit pas les documents'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      }
+    ]
+  }
+
+,
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // QUIZ 13 – Généraux IA : actualité (accessible à tous)
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'preset_general_ia_actu',
+    title: '📰 Généraux IA — L\'actu',
+    category: 'IA',
+    description: 'Qui fait quoi dans l\'IA aujourd\'hui : les acteurs, les nouveautés et les débats du moment.',
+    questions: [
+      {
+        text: 'Qui sont aujourd\'hui les deux plus gros acteurs de l\'IA générative ?',
+        choices: [
+          'IBM et Oracle',
+          'Apple et Samsung',
+          'OpenAI et Anthropic',
+          'Intel et AMD'
+        ],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel géant du numérique est le grand partenaire et investisseur d\'OpenAI ?',
+        choices: [
+          'Microsoft',
+          'Apple',
+          'Netflix',
+          'Tesla'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel modèle OpenAI a-t-il lancé à l\'été 2025 pour faire tourner ChatGPT ?',
+        choices: [
+          'GPT-3',
+          'GPT-5',
+          'ChatGPT Max',
+          'GPT-100'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Comment s\'appelle l\'IA que l\'on trouve désormais dans WhatsApp, Instagram et Facebook ?',
+        choices: [
+          'Meta AI',
+          'Siri',
+          'Gemini',
+          'Claude'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'De quel pays vient DeepSeek, l\'IA qui a fait trembler la Bourse début 2025 ?',
+        choices: [
+          'Japon',
+          'Corée du Sud',
+          'Chine',
+          'Inde'
+        ],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'Comment Apple a-t-il baptisé son IA intégrée à l\'iPhone ?',
+        choices: [
+          'iBrain',
+          'Apple Intelligence',
+          'Siri Pro',
+          'AppleGPT'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      },
+      {
+        text: 'Quel fabricant de puces profite le plus du boom de l\'IA ?',
+        choices: [
+          'Nvidia',
+          'Samsung',
+          'Intel',
+          'Sony'
+        ],
+        correctIndex: 0,
+        timeLimit: 20
+      },
+      {
+        text: 'Comment s\'appelle la loi européenne qui encadre l\'intelligence artificielle ?',
+        choices: [
+          'Le RGPD',
+          'Le Cloud Act',
+          'L\'AI Act',
+          'Le Digital Act'
+        ],
+        correctIndex: 2,
+        timeLimit: 20
+      },
+      {
+        text: 'On parle beaucoup d\'« agents IA ». De quoi s\'agit-il ?',
+        choices: [
+          'Des espions équipés d\'IA',
+          'Des IA qui accomplissent des tâches à votre place : chercher, remplir, envoyer…',
+          'Des robots humanoïdes',
+          'Des conseillers humains formés à l\'IA'
+        ],
+        correctIndex: 1,
+        timeLimit: 25
+      },
+      {
+        text: 'Pourquoi les grands centres de données pour l\'IA font-ils débat ?',
+        choices: [
+          'Ils sont trop bruyants',
+          'Ils consomment énormément d\'électricité et d\'eau',
+          'Ils sont interdits en Europe',
+          'Ils ralentissent Internet'
+        ],
+        correctIndex: 1,
+        timeLimit: 20
+      }
+    ]
+  }
+
 ];
